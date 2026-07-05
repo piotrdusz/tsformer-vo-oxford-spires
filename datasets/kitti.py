@@ -20,9 +20,9 @@ class KITTI(torch.utils.data.Dataset):
     """
 
     def __init__(self,
-                 data_path=r"data/sequences_jpg",
+                 data_path=r"data/sequences",
                  gt_path=r"data/poses",
-                 camera_id="2",
+                 camera_id="0",
                  sequences=["00", "02", "08", "09"],
                  window_size=3,
                  overlap=1,
@@ -144,7 +144,7 @@ class KITTI(torch.utils.data.Dataset):
         frames = []
         seqs = []
         for sequence in self.sequences:
-            frames_dir = os.path.join(self.data_path, sequence, "image_{}".format(self.camera_id), "*.jpg")
+            frames_dir = os.path.join(self.data_path, sequence, "image_{}".format(self.camera_id), "*.png")
             frames_seq = sorted(glob.glob(frames_dir))
             frames = frames + frames_seq
             seqs = seqs + [sequence] * len(frames_seq)
