@@ -29,3 +29,5 @@ data
 .gitattributes
 checkpoints
 checkpoints/
+oxford/
+.vscode/
