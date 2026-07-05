@@ -3,12 +3,14 @@ import torch
 import torch.optim as optim
 from tqdm import tqdm
 from datasets.kitti import KITTI
+from datasets.oxford import Oxford
 from build_model import build_model
 from torchvision import transforms
 from torch.utils.tensorboard import SummaryWriter
 from torch.utils.data import random_split
 import pickle
 import json
+import argparse
 
 
 torch.manual_seed(2023)
@@ -158,57 +160,65 @@ def compute_loss(y_hat, y, criterion, args):
 
 
 if __name__ == "__main__":
+    # Parse command-line arguments
+    parser = argparse.ArgumentParser(description="Train TSformer model")
+    parser.add_argument("--config", type=str, default="configs/config_oxford.json",
+                        help="Path to config file (default: configs/config_oxford.json)")
+    cmd_args = parser.parse_args()
 
-    # set hyperparameters and configuration
+    # Load config from file
+    with open(cmd_args.config, 'r') as f:
+        config = json.load(f)
+
+    dataset_name = config["dataset_name"]
+    
+    # Load source checkpoint args
+    source_ckpt_path = config["source_ckpt_path"]
+    source_ckpt_name = config["source_ckpt_name"]
+    
+    with open(os.path.join(source_ckpt_path, "args.pkl"), "rb") as f:
+        source_args = pickle.load(f)
+
+    # Initialize args from config
     args = {
-        "data_dir": "data",
-        "bsize": 4,  # batch size
-        "val_split": 0.1,  # percentage to use as validation data
-        "window_size": 2,  # number of frames in window
-        "overlap": 1,  # number of frames overlapped between windows
-        "optimizer": "Adam",  # optimizer [Adam, SGD, Adagrad, RAdam]
-        "lr": 1e-5,  # learning rate
-        "momentum": 0.9,  # SGD momentum
-        "weight_decay": 1e-4,  # SGD momentum
-        "epoch": 100,  # train iters each timestep
-    	"weighted_loss": None,  # float to weight angles in loss function
-      	"pretrained_ViT": False,  # load weights from pre-trained ViT
-        "checkpoint_path": "checkpoints/Exp4",  # path to save checkpoint
-        "checkpoint": None,  # checkpoint
+        "bsize": config["bsize"],
+        "val_split": config["val_split"],
+        "window_size": source_args["window_size"],
+        "overlap": source_args["overlap"],
+        "optimizer": config["optimizer"],
+        "lr": config["lr"],
+        "momentum": config["momentum"],
+        "weight_decay": config["weight_decay"],
+        "epoch": config["epoch"],
+        "weighted_loss": source_args.get("weighted_loss", None),
+        "pretrained_ViT": config["pretrained_ViT"],
+        "checkpoint_path": config["checkpoint_path"],
+        "checkpoint": config.get("checkpoint", None),
+        "finetune_from": os.path.join(source_ckpt_path, source_ckpt_name + ".pth"),
+        "dataset_name": dataset_name,
+        "oxford_data_path": config.get("oxford_data_path", "oxford/sequence"),
+        "oxford_gt_path": config.get("oxford_gt_path", "oxford/ground_truth.txt"),
     }
 
-    # tiny  - patch_size=16, embed_dim=192, depth=12, num_heads=3
-    # small - patch_size=16, embed_dim=384, depth=12, num_heads=6
-    # base  - patch_size=16, embed_dim=768, depth=12, num_heads=12
-    model_params = {
-        "dim": 384,
-        "image_size": (192, 640),  #(192, 640),
-        "patch_size": 16,
-        "attention_type": 'divided_space_time',  # ['divided_space_time', 'space_only','joint_space_time', 'time_only']
-        "num_frames": args["window_size"],
-        "num_classes": 6 * (args["window_size"] - 1),  # 6 DoF for each frame
-        "depth": 12,
-        "heads": 6,
-        "dim_head": 64,
-        "attn_dropout": 0.1,
-        "ff_dropout": 0.1,
-        "time_only": False,
-    }
+    # Get model params from source checkpoint
+    model_params = source_args["model_params"].copy()
+    model_params["num_frames"] = args["window_size"]
+    model_params["num_classes"] = 6 * (args["window_size"] - 1)
     args["model_params"] = model_params
 
-    # create checkpoints folder
+    # Create checkpoints folder
     if not os.path.exists(args["checkpoint_path"]):
         os.makedirs(args["checkpoint_path"])
 
     with open(os.path.join(args["checkpoint_path"], 'args.pkl'), 'wb') as f:
         pickle.dump(args, f)
     with open(os.path.join(args["checkpoint_path"], 'args.txt'), 'w') as f:
-    	f.write(json.dumps(args))
+        f.write(json.dumps(args))
 
-    # tensorboard writer
+    # TensorBoard writer
     TensorBoardWriter = SummaryWriter(log_dir=args["checkpoint_path"])
 
-    # preprocessing operation
+    # Preprocessing operation
     preprocess = transforms.Compose([
         transforms.Resize((model_params["image_size"])),
         transforms.ToTensor(),
@@ -217,13 +227,20 @@ if __name__ == "__main__":
             std=[0.30737526, 0.31515116, 0.32020183]),
     ])
 
-    # train and val dataloader
+    # Train and val dataloader
     print("Using CUDA: ", torch.cuda.is_available())
     print("Loading data...")
-    dataset = KITTI(window_size=args["window_size"], overlap=args["overlap"], transform=preprocess)
+    if dataset_name == "oxford":
+        dataset = Oxford(data_path=args["oxford_data_path"],
+                         gt_path=args["oxford_gt_path"],
+                         window_size=args["window_size"],
+                         overlap=args["overlap"],
+                         transform=preprocess)
+    else:
+        dataset = KITTI(window_size=args["window_size"], overlap=args["overlap"], transform=preprocess)
     nb_val = round(args["val_split"] * len(dataset))
 
-    train_data, val_data = random_split(dataset, [len(dataset) - nb_val, nb_val]) #generator=torch.Generator().manual_seed(2))
+    train_data, val_data = random_split(dataset, [len(dataset) - nb_val, nb_val])
     
     train_loader = torch.utils.data.DataLoader(train_data,
                                                batch_size=args["bsize"],
@@ -234,14 +251,14 @@ if __name__ == "__main__":
                                              shuffle=False,
                                              )
 
-    # build and load model
+    # Build and load model
     print("Building model...")
     model, args = build_model(args, model_params)
 
-    # loss and optimizer
+    # Loss and optimizer
     criterion = torch.nn.MSELoss()
     optimizer = get_optimizer(model.parameters(), args)
 
-    # train network
+    # Train network
     print(20*"--" +  " Training " + 20*"--")
     train(model, train_loader, val_loader, criterion, optimizer, TensorBoardWriter, args)

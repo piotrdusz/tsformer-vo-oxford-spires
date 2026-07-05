@@ -80,10 +80,17 @@ def build_model(args, model_params):
     args["epoch_init"] = 1
     args["best_val"] = np.inf
     if args["checkpoint"] is not None:
+        # resume an interrupted training run
         checkpoint = torch.load(os.path.join(args["checkpoint_path"], args["checkpoint"]))
         args["epoch_init"] = checkpoint["epoch"] + 1
         args["best_val"] = checkpoint["best_val"]
         model.load_state_dict(checkpoint['model_state_dict'])
+
+    elif args.get("finetune_from") is not None:
+        # fine-tune from a checkpoint trained on a different dataset
+        checkpoint = torch.load(args["finetune_from"], map_location="cpu")
+        model.load_state_dict(checkpoint['model_state_dict'])
+        print(f" --- loading weights for fine-tuning from: {args['finetune_from']} ---\n")
 
     elif args["pretrained_ViT"]:  # load ImageNet weights
         img_size = model_params["image_size"]

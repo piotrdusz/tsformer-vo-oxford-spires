@@ -4,6 +4,7 @@ import queue
 import pickle
 import os
 from datasets.kitti import KITTI
+from datasets.oxford import Oxford
 from datasets.utils import euler_to_rotation
 
 
@@ -126,9 +127,15 @@ def recover_trajectory_and_poses(poses):
 
 if __name__ == "__main__":
   
-    ckpt_path = "checkpoints/Exp1/"
-    ckpt_name = "checkpoint_e80"
-    sequences = ["01", "03", "04", "05", "06", "07", "10"]
+    ckpt_path = "checkpoints/oxford_finetune_model3/"
+    ckpt_name = "checkpoint_best"
+
+    # Set dataset to "kitti" or "oxford"
+    dataset_name = "oxford"
+
+    kitti_sequences = ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10"]
+    oxford_data_path = "oxford/sequence"
+    oxford_gt_path   = "oxford/ground_truth.txt"
 
     # read hyperparameters and configuration
     with open(os.path.join(ckpt_path, "args.pkl"), 'rb') as f:
@@ -137,6 +144,8 @@ if __name__ == "__main__":
 
     ckpt_path = os.path.join(ckpt_path, ckpt_name)
     args["checkpoint_path"] = ckpt_path
+
+    sequences = kitti_sequences if dataset_name == "kitti" else ["oxford"]
 
     # plot trajectory and ground truth
     for sequence in sequences:
@@ -147,25 +156,39 @@ if __name__ == "__main__":
         # post processing and recover trajectory
         poses = post_processing(pred_poses, args)
         pred_poses, pred_trajectory = recover_trajectory_and_poses(poses)
-        
-        save_trajectory(pred_poses, sequence, 
+
+        save_trajectory(pred_poses, sequence,
                         save_dir=os.path.join(args["checkpoint_path"], "pred_poses"))
 
         # get ground truth trajectories
-        test_data = KITTI(sequences=[sequence], window_size=args["window_size"])
-        gt_poses = test_data.windowed_data.loc[test_data.windowed_data["sequence"]==sequence, [3, 7, 11]]
+        if dataset_name == "kitti":
+            test_data = KITTI(sequences=[sequence], window_size=args["window_size"])
+            gt_poses = test_data.windowed_data.loc[
+                test_data.windowed_data["sequence"] == sequence, [3, 7, 11]
+            ]
+            gt_x = [p[0] for p in gt_poses.values]
+            gt_z = [p[2] for p in gt_poses.values]
+        else:  # oxford
+            test_data = Oxford(data_path=oxford_data_path,
+                               gt_path=oxford_gt_path,
+                               window_size=args["window_size"],
+                               overlap=args["overlap"])
+            # Oxford GT columns: 0=x, 1=y, 2=z  (world-frame positions)
+            gt_poses = test_data.windowed_data.loc[:, [0, 1]]
+            gt_x = gt_poses[0].values
+            gt_y = gt_poses[1].values
 
         plt.figure()
         pred_trajectory = np.asarray(pred_trajectory)
-        plt.plot([x[0] for x in pred_trajectory], [z[2] for z in pred_trajectory], "b")  # plot estimated trajectory
-        plt.plot([x[0] for x in gt_poses.values], [z[2] for z in gt_poses.values], "r")  # plot ground truth trajectory
+        plt.plot([p[0] for p in pred_trajectory], [p[1] for p in pred_trajectory], "b")  # estimated
+        plt.plot(gt_x, gt_y, "r")  # ground truth
         plt.grid()
         plt.title("VO - Seq {}".format(sequence))
         plt.xlabel("Translation in x direction [m]")
-        plt.ylabel("Translation in z direction [m]")
-        plt.legend(["estimated", "ground truth"]);
+        plt.ylabel("Translation in y direction [m]")
+        plt.legend(["estimated", "ground truth"])
 
-        # create checkpoints folder
+        # create plots folder
         if not os.path.exists(os.path.join(args["checkpoint_path"], "plots")):
             os.makedirs(os.path.join(args["checkpoint_path"], "plots"))
         plt.savefig(os.path.join(args["checkpoint_path"], "plots", "pred_traj_{}.png".format(sequence)))
