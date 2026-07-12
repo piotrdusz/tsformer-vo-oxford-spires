@@ -7,13 +7,28 @@ from datasets.oxford import Oxford
 from build_model import build_model
 from torchvision import transforms
 from torch.utils.tensorboard import SummaryWriter
-from torch.utils.data import random_split
+from torch.utils.data import Subset, ConcatDataset
 import pickle
 import json
 import argparse
 
 
 torch.manual_seed(2023)
+
+
+def chronological_split(dataset, val_split):
+    """Split dataset by index order: first part train, last part validation."""
+    dataset_size = len(dataset)
+    if dataset_size < 2:
+        raise ValueError("Dataset must contain at least 2 samples for train/val split.")
+
+    nb_val = round(val_split * dataset_size)
+    nb_val = max(1, min(dataset_size - 1, nb_val))
+    nb_train = dataset_size - nb_val
+
+    train_indices = range(0, nb_train)
+    val_indices = range(nb_train, dataset_size)
+    return Subset(dataset, train_indices), Subset(dataset, val_indices)
 
 
 def val_epoch(model, val_loader, criterion, args):
@@ -198,6 +213,8 @@ if __name__ == "__main__":
         "dataset_name": dataset_name,
         "oxford_data_path": config.get("oxford_data_path", "oxford/sequence"),
         "oxford_gt_path": config.get("oxford_gt_path", "oxford/ground_truth.txt"),
+        "oxford_data_paths": config.get("oxford_data_paths", None),
+        "oxford_gt_paths": config.get("oxford_gt_paths", None),
     }
 
     # Get model params from source checkpoint
@@ -231,16 +248,39 @@ if __name__ == "__main__":
     print("Using CUDA: ", torch.cuda.is_available())
     print("Loading data...")
     if dataset_name == "oxford":
-        dataset = Oxford(data_path=args["oxford_data_path"],
-                         gt_path=args["oxford_gt_path"],
-                         window_size=args["window_size"],
-                         overlap=args["overlap"],
-                         transform=preprocess)
+        oxford_data_paths = args.get("oxford_data_paths")
+        oxford_gt_paths = args.get("oxford_gt_paths")
+
+        # If multiple Oxford sequences are provided, split each sequence
+        # chronologically and then concatenate train/val subsets.
+        if oxford_data_paths and oxford_gt_paths:
+            if len(oxford_data_paths) != len(oxford_gt_paths):
+                raise ValueError("oxford_data_paths and oxford_gt_paths must have same length")
+
+            train_datasets = []
+            val_datasets = []
+            for data_path, gt_path in zip(oxford_data_paths, oxford_gt_paths):
+                seq_dataset = Oxford(data_path=data_path,
+                                     gt_path=gt_path,
+                                     window_size=args["window_size"],
+                                     overlap=args["overlap"],
+                                     transform=preprocess)
+                seq_train, seq_val = chronological_split(seq_dataset, args["val_split"])
+                train_datasets.append(seq_train)
+                val_datasets.append(seq_val)
+
+            train_data = train_datasets[0] if len(train_datasets) == 1 else ConcatDataset(train_datasets)
+            val_data = val_datasets[0] if len(val_datasets) == 1 else ConcatDataset(val_datasets)
+        else:
+            dataset = Oxford(data_path=args["oxford_data_path"],
+                             gt_path=args["oxford_gt_path"],
+                             window_size=args["window_size"],
+                             overlap=args["overlap"],
+                             transform=preprocess)
+            train_data, val_data = chronological_split(dataset, args["val_split"])
     else:
         dataset = KITTI(window_size=args["window_size"], overlap=args["overlap"], transform=preprocess)
-    nb_val = round(args["val_split"] * len(dataset))
-
-    train_data, val_data = random_split(dataset, [len(dataset) - nb_val, nb_val])
+        train_data, val_data = chronological_split(dataset, args["val_split"])
     
     train_loader = torch.utils.data.DataLoader(train_data,
                                                batch_size=args["bsize"],
