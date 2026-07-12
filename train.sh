@@ -2,7 +2,7 @@
 #
 #SBATCH --job-name=TSformer
 #SBATCH --output=log.out
-#SBATCH --time=04:00:00
+#SBATCH --time=24:00:00
 #SBATCH --account=ai-air
 #SBATCH --partition=short
 #SBATCH --gres=gpu:2
@@ -12,4 +12,4 @@
 #
 
 source .venv/bin/activate
-python train.py
+python train.py --config configs/config_oxford.json
