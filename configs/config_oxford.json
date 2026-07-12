@@ -10,7 +10,7 @@
   "weight_decay": 1e-4,
   "epoch": 100,
   "pretrained_ViT": false,
-  "checkpoint_path": "checkpoints/m1_ch5",
+  "checkpoint_path": "checkpoints/m1_ch2_ch5",
   "checkpoint": null,
   "oxford_data_paths": [
     "oxford/church_02/sequence",
@@ -19,7 +19,5 @@
   "oxford_gt_paths": [
     "oxford/church_02/ground_truth.txt",
     "oxford/church_05/ground_truth.txt"
-  ],
-  "oxford_data_path": "oxford/church_05/sequence",
-  "oxford_gt_path": "oxford/church_05/ground_truth.txt"
+  ]
 }
