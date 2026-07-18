@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-src="oxford/church_02/sequence/"
-dst="oxford/church_02_5th/sequence/"
+src="$1"
+dst="$2"
 
 mkdir -p "$dst"
 
