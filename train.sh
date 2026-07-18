@@ -5,7 +5,7 @@
 #SBATCH --time=24:00:00
 #SBATCH --account=ai-air
 #SBATCH --partition=short
-#SBATCH --gres=gpu:2
+#SBATCH --gres=gpu:1
 #SBATCH --mem=64G
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
