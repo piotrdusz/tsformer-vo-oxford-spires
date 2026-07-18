@@ -31,6 +31,50 @@ def chronological_split(dataset, val_split):
     return Subset(dataset, train_indices), Subset(dataset, val_indices)
 
 
+def build_oxford_dataset(data_path, gt_path, args, preprocess):
+    return Oxford(data_path=data_path,
+                  gt_path=gt_path,
+                  window_size=args["window_size"],
+                  overlap=args["overlap"],
+                  transform=preprocess)
+
+
+def build_oxford_datasets(data_paths, gt_paths, args, preprocess):
+    if len(data_paths) != len(gt_paths):
+        raise ValueError("Oxford data paths and gt paths must have the same length")
+
+    datasets = []
+    for data_path, gt_path in zip(data_paths, gt_paths):
+        datasets.append(build_oxford_dataset(data_path, gt_path, args, preprocess))
+    return datasets
+
+
+def concat_if_needed(datasets):
+    if len(datasets) == 0:
+        raise ValueError("At least one dataset is required")
+    return datasets[0] if len(datasets) == 1 else ConcatDataset(datasets)
+
+
+def evaluate_test_once(model, test_loader, criterion, tensorboard_writer, args):
+    if test_loader is None:
+        return
+
+    best_checkpoint_path = os.path.join(args["checkpoint_path"], "checkpoint_best.pth")
+    if os.path.exists(best_checkpoint_path):
+        checkpoint = torch.load(best_checkpoint_path)
+        model.load_state_dict(checkpoint["model_state_dict"])
+        print(f"Loaded best checkpoint for test evaluation: {best_checkpoint_path}")
+    else:
+        print("Best checkpoint not found. Evaluating test set with current model weights.")
+
+    with torch.no_grad():
+        model.eval()
+        test_loss = val_epoch(model, test_loader, criterion, args)
+
+    print(f"Final test_loss: {test_loss:.4f}")
+    tensorboard_writer.add_scalar("test_loss", test_loss, args["epoch"])
+
+
 def val_epoch(model, val_loader, criterion, args):
     epoch_loss = 0
     with tqdm(val_loader, unit="batch") as tepoch:
@@ -84,12 +128,41 @@ def train_epoch(model, train_loader, criterion, optimizer, epoch, tensorboard_wr
     return epoch_loss / len(train_loader)  
   
 
-def train(model, train_loader, val_loader, criterion, optimizer, tensorboard_writer, args):
+def train(model,
+          train_loader,
+          val_loader,
+          criterion,
+          optimizer,
+          tensorboard_writer,
+          args,
+          rotating_train_datasets=None):
     checkpoint_path = args["checkpoint_path"]
     epochs = args["epoch"]
     best_val = args["best_val"]
     # scheduler = StepLR(optimizer, step_size=1, gamma=0.7)
+
+    if rotating_train_datasets is not None and len(rotating_train_datasets) < 2:
+        raise ValueError("Rotating validation requires at least 2 training sequences")
+
     for epoch in range(args["epoch_init"], epochs):
+        if rotating_train_datasets is not None:
+            val_seq_idx = epoch % len(rotating_train_datasets)
+            val_data = rotating_train_datasets[val_seq_idx]
+            train_parts = [
+                dataset for idx, dataset in enumerate(rotating_train_datasets)
+                if idx != val_seq_idx
+            ]
+
+            train_data = concat_if_needed(train_parts)
+            train_loader = torch.utils.data.DataLoader(train_data,
+                                                       batch_size=args["bsize"],
+                                                       shuffle=True)
+            val_loader = torch.utils.data.DataLoader(val_data,
+                                                     batch_size=1,
+                                                     shuffle=False)
+            print(f"Epoch {epoch}: rotating validation sequence index = {val_seq_idx}")
+            tensorboard_writer.add_scalar("rotating_val_seq_idx", val_seq_idx, epoch)
+
         # training for one epoch
         model.train()
         train_loss = train_epoch(model, train_loader, criterion, optimizer, epoch, tensorboard_writer, args)
@@ -215,6 +288,12 @@ if __name__ == "__main__":
         "oxford_gt_path": config.get("oxford_gt_path", "oxford/ground_truth.txt"),
         "oxford_data_paths": config.get("oxford_data_paths", None),
         "oxford_gt_paths": config.get("oxford_gt_paths", None),
+        "oxford_train_data_paths": config.get("oxford_train_data_paths", None),
+        "oxford_train_gt_paths": config.get("oxford_train_gt_paths", None),
+        "oxford_test_data_path": config.get("oxford_test_data_path", None),
+        "oxford_test_gt_path": config.get("oxford_test_gt_path", None),
+        "oxford_test_data_paths": config.get("oxford_test_data_paths", None),
+        "oxford_test_gt_paths": config.get("oxford_test_gt_paths", None),
     }
 
     # Get model params from source checkpoint
@@ -247,49 +326,89 @@ if __name__ == "__main__":
     # Train and val dataloader
     print("Using CUDA: ", torch.cuda.is_available())
     print("Loading data...")
+    rotating_train_datasets = None
+    test_loader = None
     if dataset_name == "oxford":
+        oxford_train_data_paths = args.get("oxford_train_data_paths")
+        oxford_train_gt_paths = args.get("oxford_train_gt_paths")
         oxford_data_paths = args.get("oxford_data_paths")
         oxford_gt_paths = args.get("oxford_gt_paths")
 
-        # If multiple Oxford sequences are provided, split each sequence
-        # chronologically and then concatenate train/val subsets.
-        if oxford_data_paths and oxford_gt_paths:
-            if len(oxford_data_paths) != len(oxford_gt_paths):
-                raise ValueError("oxford_data_paths and oxford_gt_paths must have same length")
+        # Preferred mode: rotate validation over full training sequences.
+        if oxford_train_data_paths and oxford_train_gt_paths:
+            rotating_train_datasets = build_oxford_datasets(oxford_train_data_paths,
+                                                            oxford_train_gt_paths,
+                                                            args,
+                                                            preprocess)
+            # Placeholders for signature compatibility; real loaders are built per epoch.
+            train_loader = None
+            val_loader = None
 
+            oxford_test_data_paths = args.get("oxford_test_data_paths")
+            oxford_test_gt_paths = args.get("oxford_test_gt_paths")
+            if oxford_test_data_paths and oxford_test_gt_paths:
+                test_datasets = build_oxford_datasets(oxford_test_data_paths,
+                                                      oxford_test_gt_paths,
+                                                      args,
+                                                      preprocess)
+                test_data = concat_if_needed(test_datasets)
+                test_loader = torch.utils.data.DataLoader(test_data,
+                                                          batch_size=1,
+                                                          shuffle=False)
+            elif args.get("oxford_test_data_path") and args.get("oxford_test_gt_path"):
+                test_data = build_oxford_dataset(args["oxford_test_data_path"],
+                                                args["oxford_test_gt_path"],
+                                                args,
+                                                preprocess)
+                test_loader = torch.utils.data.DataLoader(test_data,
+                                                          batch_size=1,
+                                                          shuffle=False)
+            else:
+                print("No dedicated Oxford test path configured. Skipping final test evaluation.")
+
+        # Backward-compatible mode: split each sequence chronologically.
+        elif oxford_data_paths and oxford_gt_paths:
+            datasets = build_oxford_datasets(oxford_data_paths,
+                                             oxford_gt_paths,
+                                             args,
+                                             preprocess)
             train_datasets = []
             val_datasets = []
-            for data_path, gt_path in zip(oxford_data_paths, oxford_gt_paths):
-                seq_dataset = Oxford(data_path=data_path,
-                                     gt_path=gt_path,
-                                     window_size=args["window_size"],
-                                     overlap=args["overlap"],
-                                     transform=preprocess)
+            for seq_dataset in datasets:
                 seq_train, seq_val = chronological_split(seq_dataset, args["val_split"])
                 train_datasets.append(seq_train)
                 val_datasets.append(seq_val)
 
-            train_data = train_datasets[0] if len(train_datasets) == 1 else ConcatDataset(train_datasets)
-            val_data = val_datasets[0] if len(val_datasets) == 1 else ConcatDataset(val_datasets)
+            train_data = concat_if_needed(train_datasets)
+            val_data = concat_if_needed(val_datasets)
+
+            train_loader = torch.utils.data.DataLoader(train_data,
+                                                       batch_size=args["bsize"],
+                                                       shuffle=True)
+            val_loader = torch.utils.data.DataLoader(val_data,
+                                                     batch_size=1,
+                                                     shuffle=False)
         else:
-            dataset = Oxford(data_path=args["oxford_data_path"],
-                             gt_path=args["oxford_gt_path"],
-                             window_size=args["window_size"],
-                             overlap=args["overlap"],
-                             transform=preprocess)
+            dataset = build_oxford_dataset(args["oxford_data_path"],
+                                           args["oxford_gt_path"],
+                                           args,
+                                           preprocess)
             train_data, val_data = chronological_split(dataset, args["val_split"])
+            train_loader = torch.utils.data.DataLoader(train_data,
+                                                       batch_size=args["bsize"],
+                                                       shuffle=True)
+            val_loader = torch.utils.data.DataLoader(val_data,
+                                                     batch_size=1,
+                                                     shuffle=False)
     else:
         dataset = KITTI(window_size=args["window_size"], overlap=args["overlap"], transform=preprocess)
         train_data, val_data = chronological_split(dataset, args["val_split"])
-    
-    train_loader = torch.utils.data.DataLoader(train_data,
-                                               batch_size=args["bsize"],
-                                               shuffle=True,
-                                               )
-    val_loader = torch.utils.data.DataLoader(val_data,
-                                             batch_size=1,
-                                             shuffle=False,
-                                             )
+        train_loader = torch.utils.data.DataLoader(train_data,
+                                                   batch_size=args["bsize"],
+                                                   shuffle=True)
+        val_loader = torch.utils.data.DataLoader(val_data,
+                                                 batch_size=1,
+                                                 shuffle=False)
 
     # Build and load model
     print("Building model...")
@@ -301,4 +420,15 @@ if __name__ == "__main__":
 
     # Train network
     print(20*"--" +  " Training " + 20*"--")
-    train(model, train_loader, val_loader, criterion, optimizer, TensorBoardWriter, args)
+    train(model,
+          train_loader,
+          val_loader,
+          criterion,
+          optimizer,
+          TensorBoardWriter,
+          args,
+          rotating_train_datasets=rotating_train_datasets)
+
+    # Evaluate the held-out test sequence once after training.
+    if dataset_name == "oxford":
+        evaluate_test_once(model, test_loader, criterion, TensorBoardWriter, args)
