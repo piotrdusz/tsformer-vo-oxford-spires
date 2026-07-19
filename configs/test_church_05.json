@@ -11,7 +11,7 @@
   "epoch": 100,
   "pretrained_ViT": false,
   "checkpoint_path": "checkpoints/test_ch_05",
-  "checkpoint": null,
+  "checkpoint": "checkpoint_last.pth",
   "oxford_train_data_paths": [
     "oxford/5hz/blenheim_palace_01/sequence",
     "oxford/5hz/blenheim_palace_02/sequence",
