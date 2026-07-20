@@ -241,17 +241,50 @@ def parse_rmse_from_zip(zip_path):
         return None
 
 
-def discover_subsequences(sequence_roots):
+def _find_gt_file(base_dir):
+    gt_candidates = [
+        "ground_truth.txt",
+        "gt-tum.txt",
+        "groundtruth.txt",
+    ]
+    for name in gt_candidates:
+        p = os.path.join(base_dir, name)
+        if os.path.isfile(p):
+            return p
+    return None
+
+
+def discover_subsequences(sequence_roots, include_names=None):
     found = []
+    include_set = set(include_names) if include_names else None
+
     for root in sequence_roots:
         if not os.path.isdir(root):
             continue
+
+        root_name = os.path.basename(root.rstrip("/"))
+        direct_seq_dir = os.path.join(root, "sequence")
+        direct_gt_file = _find_gt_file(root)
+
+        # Support direct sequence folders, e.g. oxford/5hz/christ_church_02
+        if os.path.isdir(direct_seq_dir) and direct_gt_file:
+            if include_set is None or root_name in include_set:
+                found.append((os.path.dirname(root), root_name, root, direct_seq_dir, direct_gt_file))
+            continue
+
+        # Support parent roots containing many sequence folders.
         for name in sorted(os.listdir(root)):
             subdir = os.path.join(root, name)
+            if not os.path.isdir(subdir):
+                continue
+            if include_set is not None and name not in include_set:
+                continue
+
             seq_dir = os.path.join(subdir, "sequence")
-            gt_file = os.path.join(subdir, "ground_truth.txt")
-            if os.path.isdir(subdir) and os.path.isdir(seq_dir) and os.path.isfile(gt_file):
+            gt_file = _find_gt_file(subdir)
+            if os.path.isdir(seq_dir) and gt_file:
                 found.append((root, name, subdir, seq_dir, gt_file))
+
     return found
 
 
@@ -329,6 +362,12 @@ def main():
     parser.add_argument("--checkpoint-path", default="checkpoints/m1_ch2_ch5")
     parser.add_argument("--checkpoint-name", default="checkpoint_best")
     parser.add_argument("--sequence-roots", nargs="+", default=["oxford/02", "oxford/05"])
+    parser.add_argument(
+        "--include-names",
+        nargs="+",
+        default=None,
+        help="Optional list of sequence/subsequence folder names to evaluate.",
+    )
     parser.add_argument("--output-dir", default="comparison/tsformer_eval")
     parser.add_argument("--t-max-diff", type=float, default=0.5)
     args_cli = parser.parse_args()
@@ -341,7 +380,7 @@ def main():
         args_cli.checkpoint_path, args_cli.checkpoint_name, device
     )
 
-    subsequences = discover_subsequences(args_cli.sequence_roots)
+    subsequences = discover_subsequences(args_cli.sequence_roots, include_names=args_cli.include_names)
     if not subsequences:
         print("No valid subsequences found.")
         return
