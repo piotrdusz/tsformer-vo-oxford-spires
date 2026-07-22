@@ -32,3 +32,13 @@ checkpoints/
 oxford/
 .vscode/
 comparison/
+
+Indoor_Outdoor_Localization_Review/*.bst
+Indoor_Outdoor_Localization_Review/*.aux
+Indoor_Outdoor_Localization_Review/*.fdb_latexmk
+Indoor_Outdoor_Localization_Review/*.log
+Indoor_Outdoor_Localization_Review/*.out
+Indoor_Outdoor_Localization_Review/*.synctex.gz
+Indoor_Outdoor_Localization_Review/*.fls
+Indoor_Outdoor_Localization_Review/*.blg
+Indoor_Outdoor_Localization_Review/*.bbl
