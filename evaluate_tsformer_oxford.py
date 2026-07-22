@@ -240,6 +240,17 @@ def parse_rmse_from_zip(zip_path):
     except Exception:
         return None
 
+def parse_max_from_zip(zip_path):
+    if not os.path.exists(zip_path):
+        return None
+    try:
+        with zipfile.ZipFile(zip_path, "r") as zf:
+            with zf.open("stats.json") as fh:
+                stats = json.load(fh)
+                return stats.get("max")
+    except Exception:
+        return None
+
 
 def _find_gt_file(base_dir):
     gt_candidates = [
@@ -403,7 +414,9 @@ def main():
 
         status = "ok"
         notes = ""
+        ape_max = None
         ape_rmse = None
+        rpe_max = None
         rpe_rmse = None
         pred_count = 0
         gt_overlap_count = 0
@@ -467,6 +480,8 @@ def main():
                 ok_ape, msg_ape = run_evo_metric(cmd_ape)
                 ok_rpe, msg_rpe = run_evo_metric(cmd_rpe)
 
+                ape_max = parse_max_from_zip(ape_zip) if ok_ape else None
+                rpe_max = parse_max_from_zip(rpe_zip) if ok_rpe else None
                 ape_rmse = parse_rmse_from_zip(ape_zip) if ok_ape else None
                 rpe_rmse = parse_rmse_from_zip(rpe_zip) if ok_rpe else None
 
@@ -488,6 +503,7 @@ def main():
                     if status == "ok":
                         status = "partial"
 
+
         print(
             f"images={len(image_files)} pred={pred_count} gt_overlap={gt_overlap_count} "
             f"APE_RMSE={ape_rmse} RPE_RMSE={rpe_rmse} status={status}"
@@ -501,9 +517,10 @@ def main():
                 "num_images": len(image_files),
                 "num_pred_poses": pred_count,
                 "num_gt_overlap": gt_overlap_count,
+                "ape_max_m": ape_max,
                 "ape_rmse_m": ape_rmse,
+                "rpe_max_m": rpe_max,
                 "rpe_rmse_m": rpe_rmse,
-                "plot_file": plot_file,
                 "status": status,
                 "notes": notes,
             }
@@ -519,9 +536,10 @@ def main():
                 "num_images",
                 "num_pred_poses",
                 "num_gt_overlap",
+                "ape_max_m",
                 "ape_rmse_m",
+                "rpe_max_m",
                 "rpe_rmse_m",
-                "plot_file",
                 "status",
                 "notes",
             ],
