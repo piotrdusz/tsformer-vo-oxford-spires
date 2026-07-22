@@ -1,0 +1,670 @@
+%Version 3.1 December 2024
+% See section 11 of the User Manual for version history
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                 %%
+%% Please do not use \input{...} to include other tex files.       %%
+%% Submit your LaTeX manuscript as one .tex document.              %%
+%%                                                                 %%
+%% All additional figures and files should be attached             %%
+%% separately and not embedded in the \TeX\ document itself.       %%
+%%                                                                 %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%\documentclass[referee,sn-basic]{sn-jnl}% referee option is meant for double line spacing
+
+%%=======================================================%%
+%% to print line numbers in the margin use lineno option %%
+%%=======================================================%%
+
+%%\documentclass[lineno,pdflatex,sn-basic]{sn-jnl}% Basic Springer Nature Reference Style/Chemistry Reference Style
+
+%%=========================================================================================%%
+%% the documentclass is set to pdflatex as default. You can delete it if not appropriate.  %%
+%%=========================================================================================%%
+
+%%\documentclass[sn-basic]{sn-jnl}% Basic Springer Nature Reference Style/Chemistry Reference Style
+
+%%Note: the following reference styles support Namedate and Numbered referencing. By default the style follows the most common style. To switch between the options you can add or remove Numbered in the optional parenthesis. 
+%%The option is available for: sn-basic.bst, sn-chicago.bst%  
+ 
+%%\documentclass[pdflatex,sn-nature]{sn-jnl}% Style for submissions to Nature Portfolio journals
+%%\documentclass[pdflatex,sn-basic]{sn-jnl}% Basic Springer Nature Reference Style/Chemistry Reference Style
+\documentclass[iicol, pdflatex,sn-mathphys-num]{sn-jnl}% Math and Physical Sciences Numbered Reference Style
+% \documentclass[pdflatex,sn-mathphys-ay]{sn-jnl}% Math and Physical Sciences Author Year Reference Style
+%%\documentclass[pdflatex,sn-aps]{sn-jnl}% American Physical Society (APS) Reference Style
+%%\documentclass[pdflatex,sn-vancouver-num]{sn-jnl}% Vancouver Numbered Reference Style
+%%\documentclass[pdflatex,sn-vancouver-ay]{sn-jnl}% Vancouver Author Year Reference Style
+%%\documentclass[pdflatex,sn-apa]{sn-jnl}% APA Reference Style
+%%\documentclass[pdflatex,sn-chicago]{sn-jnl}% Chicago-based Humanities Reference Style
+
+%%%% Standard Packages
+%%<additional latex packages if required can be included here>
+
+\usepackage{graphicx}%
+\usepackage{multirow}%
+\usepackage{amsmath,amssymb,amsfonts}%
+\usepackage{amsthm}%
+\usepackage{mathrsfs}%
+\usepackage[title]{appendix}%
+\usepackage{xcolor}%
+\usepackage{textcomp}%
+\usepackage{manyfoot}%
+\usepackage{booktabs}%
+\usepackage{algorithm}%
+\usepackage{algorithmicx}%
+\usepackage{algpseudocode}%
+\usepackage{listings}%
+\usepackage[normalem]{ulem}
+\usepackage{subcaption}
+%%%%
+
+%%%%%=============================================================================%%%%
+%%%%  Remarks: This template is provided to aid authors with the preparation
+%%%%  of original research articles intended for submission to journals published 
+%%%%  by Springer Nature. The guidance has been prepared in partnership with 
+%%%%  production teams to conform to Springer Nature technical requirements. 
+%%%%  Editorial and presentation requirements differ among journal portfolios and 
+%%%%  research disciplines. You may find sections in this template are irrelevant 
+%%%%  to your work and are empowered to omit any such section if allowed by the 
+%%%%  journal you intend to submit to. The submission guidelines and policies 
+%%%%  of the journal take precedence. A detailed User Manual is available in the 
+%%%%  template package for technical guidance.
+%%%%%=============================================================================%%%%
+
+%% as per the requirement new theorem styles can be included as shown below
+\theoremstyle{thmstyleone}%
+\newtheorem{theorem}{Theorem}%  meant for continuous numbers
+%%\newtheorem{theorem}{Theorem}[section]% meant for sectionwise numbers
+%% optional argument [theorem] produces theorem numbering sequence instead of independent numbers for Proposition
+\newtheorem{proposition}[theorem]{Proposition}% 
+%%\newtheorem{proposition}{Proposition}% to get separate numbers for theorem and proposition etc.
+
+\theoremstyle{thmstyletwo}%
+\newtheorem{example}{Example}%
+\newtheorem{remark}{Remark}%
+
+\theoremstyle{thmstylethree}%
+\newtheorem{definition}{Definition}%
+
+\raggedbottom
+%%\unnumbered% uncomment this for unnumbered level heads
+
+\begin{document}
+
+\title[Article Title]{Robust Navigation for Mobile Robots: 
+
+Comparison of Indoor-Outdoor Localization Methods}
+
+
+%%=============================================================%%
+%% Prefix	-> \pfx{Dr}
+%% GivenName	-> \fnm{Joergen W.}
+%% Particle	-> \spfx{van der} -> surname prefix
+%% FamilyName	-> \sur{Ploeg}
+%% Suffix	-> \sfx{IV}
+%% NatureName	-> \tanm{Poet Laureate} -> Title after name
+%% Degrees	-> \dgr{MSc, PhD}
+%% \author*[1,2]{\pfx{Dr} \fnm{Joergen W.} \spfx{van der} \sur{Ploeg} \sfx{IV} \tanm{Poet Laureate} 
+%%                 \dgr{MSc, PhD}}\email{iauthor@gmail.com}
+%%=============================================================%%
+
+
+\author[1, 2]{\fnm{Katarzyna} \sur{Kijania}}\email{katarzyna.kijania@dokt.pw.edu.pl}
+% ORCID: 0000-0003-3824-9525
+
+\author[1]{\fnm{Jacek} \sur{Dybała}}\email{jacek.dybala@pw.edu.pl}
+% ORCID: 0000-0002-0721-1105
+
+\author*[3]{\fnm{Piotr} \sur{Duszak}}\email{piotr.duszak@pw.edu.pl} 
+% ORCID: 0000-0001-6059-702X
+
+
+\affil[1]{\orgname{Warsaw University of Technology}, \orgdiv{Faculty of Automotive and Construction Machinery Engineering}, \orgaddress{\street{Ludwika Narbutta 84}, \postcode{02-524} \city{Warsaw}, \country{Poland}}}
+
+
+\affil[2]{\orgname{Łukasiewicz Research Network - Automotive Industry Institute (Łukasiewicz-PIMOT)}, \orgaddress{\street{Jagiellońska 55}, \postcode{03-301} \city{Warsaw}, \country{Poland}}}
+
+\affil[3]{\orgname{Warsaw University of Technology}, \orgdiv{Faculty of Mechatronics}, \orgaddress{\street{Andrzeja Boboli 8}, \postcode{02-525} \city{Warsaw}, \country{Poland}}}
+
+
+
+\abstract{
+This article presents a concise review of state-of-the-art localization methods for mobile robots operating in mixed indoor–outdoor environments, with a focus on LiDAR–inertial and camera-sensor data fusion techniques. An empirical evaluation of selected algorithms (FAST-LIO2 \cite{FAST-LIO2}, GLIM \cite{Koide_2024}, KISS-ICP \cite{KISS-ICP}, ORB-SLAM3 \cite{ORB-SLAM3}, and RKO-LIO \cite{RKO-LIO}) was performed using the Oxford Spires Dataset \cite{tao2025spires}, which features challenging indoor–outdoor transitions. The continuous trajectory data was temporally segmented into distinct indoor, outdoor, and transitional patches, allowing for a highly granular assessment of algorithmic stability and performance across shifting environmental regimes.
+}
+
+\keywords{indoor-outdoor localization, mobile robots, navigation, sensor fusion, LiDAR-inertial odometry}
+
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+\label{sec:intro}
+
+Robust state estimation is a fundamental prerequisite for autonomous mobile robots, particularly as their operational domains expand from highly controlled indoor spaces \cite{robotics12020047} to unstructured outdoor environments. In applications such as automated warehouse logistics, last-mile delivery \cite{grocery-delivery}, and campus-scale navigation, robots are increasingly required to traverse mixed indoor–outdoor environments seamlessly. This requirement introduces severe environmental variability, rendering single-modality sensor suites highly vulnerable to failure. For instance, environments with dynamic obstacles or perceptually degraded zones severely impact sensor reliability and overall mission success.
+
+To achieve resilient localization, modern robotic systems typically rely on Simultaneous Localization and Mapping (SLAM) \cite{SLAM} or sequential odometry architectures. Depending on the perceptual modalities employed, these systems exhibit distinct failure cases. Visual-Inertial SLAM frameworks tightly couple camera streams with Inertial Measurement Units (IMUs), yet they frequently struggle with illumination shocks and featureless corridors \cite{milford2012featureless}. Conversely, methods relying strictly on 2D LiDAR and IMUs are prone to geometric degeneracy in unstructured, wide-baseline outdoor spaces. Consequently, the state-of-the-art has converged on fusing 3D LiDAR and high-frequency IMU data \cite{shan2020liosam}. This LiDAR-Inertial Odometry (LIO) approach provides comprehensive spatial information and accurate high-rate motion dynamics, mitigating the weaknesses of vision-only systems.
+
+Our research focuses on the most critical phase of mixed-environment navigation: the physical transition between indoor and outdoor regimes. During these transitions, sensor measurements can vary significantly due to changing environmental conditions, which can directly affect the performance of localization algorithms. These algorithms need to handle the sudden loss or gain of high-frequency geometric constraints (e.g., exiting a narrow corridor into an open courtyard) while simultaneously managing extreme illumination changes. In our work, we present an empirical evaluation of selected algorithms (FAST-LIO2 \cite{FAST-LIO2}, GLIM \cite{Koide_2024}, KISS-ICP \cite{KISS-ICP}, ORB-SLAM3 \cite{ORB-SLAM3}, and RKO-LIO \cite{RKO-LIO}) in indoor, outdoor, and transition conditions, performed using the Oxford Spires Dataset \cite{tao2025spires}. Selected sequences from the dataset and the visualized transition moments are presented in Fig. \ref{fig:map-christ-church-02} and \ref{fig:map-christ-church-05}.
+
+%from the state estimator must gracefully handle the sudden loss or gain of high-frequency geometric constraints (e.g., exiting a narrow corridor into an open courtyard) while simultaneously managing extreme illumination changes. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{fig/map_christ-church-02.png}
+    \caption{Oxford Spires Dataset christ-church-02 sequences with map of visualize example transition moments}
+    \label{fig:map-christ-church-02}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{fig/map_christ-church-05.png}
+    \caption{Oxford Spires Dataset christ-church-05 sequences with map of visualize example transition moments}
+    \label{fig:map-christ-church-05}
+\end{figure}
+
+\subsection{Problem Statement}
+
+Accurate and robust localization for mobile robots operating across mixed indoor–outdoor environments remains a significant challenge. This difficulty arises from rapid changes in visual appearance and geometry, coupled with intermittent or completely absent global positioning signals. Because individual sensors suffer from specific physical and environmental limitations—such as camera exposure saturation from outdoor glare or LiDAR geometric degeneracy in featureless corridors—relying on a single modality is insufficient for reliable autonomy. 
+
+To overcome these vulnerabilities, autonomous systems must utilize sensor fusion to combine data from various sources, compensating for the limitations of each individual sensor and ensuring more accurate environmental perception. While contemporary computer vision and state estimation methods predominantly rely on datasets generated from cameras and LiDARs, this data is often augmented with GPS, IMU, or sonar information to allow for deeper condition interpretations and missing data recovery. 
+
+Implementing this fusion, however, introduces distinct technical challenges. One prominent approach involves merging LiDAR and camera data to extract precise distance information for specific image pixels. To successfully combine this information, precise sensor transition (extrinsic calibration between the camera and LiDAR) is required to determine and maintain a common coordinate system. Furthermore, modern SLAM algorithms must fuse this multi-modal data (camera, IMU, GPS, and LiDAR) to compute a highly accurate, continuous, and kinematically consistent transform chain ($map \rightarrow odom \rightarrow base\_link$) that does not rely on just one sensor.
+
+The core problem addressed in this study is that while state-of-the-art sensor fusion and SLAM systems achieve sub-centimeter drift under strictly controlled, single-regime conditions, their performance during abrupt indoor–outdoor transitions remains underreported. From a probabilistic standpoint, these transitions—where fused modalities like GPS or stable visual features are suddenly lost or regained—cause a sudden inflation in the state covariance matrix, threatening the stability of the estimator. Existing benchmarks predominantly focus on long-term drift in static environments, failing to mathematically isolate and evaluate the transient "stability shocks" caused by crossing these environmental thresholds.
+
+\subsection{Contributions}
+To address the challenges of seamless navigation in transitioning environments, this paper makes the following contributions:
+\begin{itemize}
+    \item \textbf{A Concise Review of State-of-the-Art (SOTA) Methods:} We provide a practitioner-oriented overview of localization approaches for mixed indoor–outdoor environments, categorizing filtering, optimization, and learning-based paradigms.
+    \item \textbf{Empirical Evaluation and Benchmarking:} We present a comprehensive comparative analysis of five leading algorithms: FAST-LIO2 \cite{FAST-LIO2}, GLIM \cite{Koide_2024}, KISS-ICP \cite{KISS-ICP}, ORB-SLAM3 \cite{ORB-SLAM3}, and RKO-LIO \cite{RKO-LIO}.
+    \item \textbf{Granular Transition Analysis:} By leveraging the rich metadata of the Oxford Spires Dataset \cite{tao2025spires}, we introduce a temporal segmentation methodology that isolates trajectory errors into strict indoor, strict outdoor, and transition-specific phases, revealing the exact vulnerabilities of each algorithm.
+    \item \textbf{Reproducible Research Artifacts:} To support the robotics community and ensure reproducibility, we provide our optimized configuration files, sequence segmentation scripts, and parameter tunings used for the benchmarked algorithms.
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Related works and background}
+\label{sec:related}
+
+State-of-the-art (SOA) localization architectures leverage a diverse array of sensing modalities to perceive the environment and estimate the robot's state. Core modalities include Light Detection and Ranging (LiDAR) for precise geometric mapping, RGB and depth cameras for rich textural and structural information \cite{Visual-lidar}, Inertial Measurement Units (IMUs) for high-frequency kinematic measurements, and Global Navigation Satellite Systems (GNSS) for absolute positioning \cite{Robot-Localization-GNNS}. Major localization approaches have evolved to address the fusion of these modalities. Filter-based LiDAR-Inertial Odometry (LIO) systems, utilizing Extended Kalman Filters (EKF) and their iterative variants (ESIKF, IESKF), have become prominent for their computational efficiency and real-time performance. In contrast, optimization-based SLAM frameworks employ factor graphs and scan-matching pipelines to jointly optimize poses, prioritizing accuracy and global consistency. To bridge the gap between structure-less and feature-poor environments, Visual-LiDAR and multi-sensor fusion systems have emerged \cite{3d-2dlidar}, exploiting the complementary nature of optical and range data. Synthesizing a unified approach that maintains robust performance during indoor-outdoor transitions remains a critical challenge.
+
+Robot localization relies on sensor perception and algorithms that determine how a pose is calculated \cite{Borenstein1996WhereAI}. Integrating a higher number of sensors provides data redundancy, which significantly increases the robustness of the positioning system. In mixed indoor–outdoor environments, selecting the appropriate sensor suite is critical for maintaining reliability across differing conditions. Indoor areas consist of corridors, walls, ceilings, structured rooms, and stable lighting. Conversely, outdoor areas often feature vast distances, changing weather and lighting conditions, buildings, and vegetation. These varied and challenging conditions significantly impact algorithmic performance. A sudden lack of high-frequency geometric constraints negatively affects the covariance matrix of the state estimate for the predicted pose.
+
+
+\begin{table}[t!]   
+    \centering
+    \caption{Taxonomy of Mobile Robot Localization Methods}
+    \label{classification-localization-methods}
+    \begin{tabular}{p{2.1cm} p{2.1cm} p{2.1cm}}
+        \toprule
+        \textbf{Sensor Modality} & 
+        \textbf{Localization Scope} & 
+        \textbf{Estimation Paradigm} \\ 
+        \midrule
+        
+        \textbf{Proprioceptive} \newline \newline \footnotesize{IMU, Wheel Encoders} 
+        & 
+        \textbf{Local/Relative} \newline \newline \footnotesize{Odometry, Dead Reckoning}
+        & 
+        \textbf{Filter-Based} \newline \newline \footnotesize{EKF, ESIKF, Particle Filters (MCL)} \\
+        \midrule
+        
+        \textbf{Exteroceptive} \newline \newline \footnotesize{LiDAR (2D/3D), Cameras (RGB/D, Thermal), Radar}
+        & 
+        \textbf{Simultaneous (SLAM)} \newline \newline \footnotesize{Joint trajectory \& map estimation}
+        & 
+        \textbf{Optimization-Based} \newline \newline \footnotesize{Factor Graphs, Sliding Window, Bundle Adjustment} \\
+        \midrule
+        
+        \textbf{Absolute / External} \newline \newline \footnotesize{GNSS, UWB, IR Beacons}
+        & 
+        \textbf{Global / Absolute} \newline \newline \footnotesize{Prior map matching, Satellite positioning}
+        & 
+        \textbf{Learning-Based} \newline \newline \footnotesize{CNNs, Transformer-based odometry} \\
+        
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+When a specific sensor becomes unreliable, the system must compensate for corrupted or missing data through robust fusion algorithms. While vision-based systems are popular, they often struggle in outdoor environments where a lack of distinct features or lighting changes can degrade positioning accuracy. Consequently, the fusion of LiDAR and IMU data has emerged as a state-of-the-art solution for providing accurate and robust positioning during the complex transitions between indoor and outdoor spaces \cite{FAST-LIO2, shan2020liosam, nubert2021self}.
+
+
+\subsection{Method Groups}
+
+The landscape of robot localization frameworks can be categorized based on two fundamental criteria: the state estimation paradigm and the sensor fusion architecture. A fundamental theoretical divergence exists between the two primary state estimation paradigms: filter-based and optimization-based methods. Filter-based approaches (such as FAST-LIO2 \cite{FAST-LIO2}) operate by marginalizing past states, continuously propagating a single current state estimate and its covariance to maintain a tight computational bound. Conversely, optimization-based methods (such as GLIM \cite{Koide_2024} and ORB-SLAM3 \cite{ORB-SLAM3}) retain a history of measurements, maintaining a sliding window or full factor graph to jointly optimize the trajectory over multiple time steps \cite{Cadena_2016}. Furthermore, purely geometric alignment methods like KISS-ICP \cite{KISS-ICP} and RKO-LIO \cite{RKO-LIO} eschew complex backend graphs in favor of highly robust, direct scan-to-map registrations \cite{ICP}.
+
+
+\subsection{Comparison Summary}
+To provide a clear perspective on the current landscape, Table~\ref{tab:methods-summary} consolidates key properties of the tested indoor--outdoor localization systems extracted from our literature review. The algorithms are categorized by their required sensor suites and underlying estimation paradigms. Crucially, the table distinguishes between sequential state estimation approaches (Odometry), which primarily focus on high-frequency local consistency, and globally consistent graph optimization approaches (SLAM), which maintain map persistence and global accuracy over time. 
+
+\begin{table*}[h!]
+  \centering
+  \caption{Evaluated localization systems and their key properties. RT = claimed real-time capability. Transform support is divided into continuous Odometry and global Map corrections.}
+  \label{tab:methods-summary}
+  \resizebox{\textwidth}{!}{%
+  \renewcommand{\arraystretch}{1.2}
+  \begin{tabular}{l l l p{5.5cm} c c c}
+    \toprule
+    \textbf{Method} & \textbf{Sensors} & \textbf{Estimation \& Fusion} & \textbf{Architecture \& Scope} & \textbf{RT} & \textbf{Odometry} & \textbf{Map} \\
+    \midrule
+    FAST-LIO2 & LiDAR+IMU & Filter-Based & LiDAR-Inertial Odometry \newline \footnotesize{(Direct, ESIKF)} & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
+    GLIM & LiDAR(+RGB-D)+IMU & Optimization-Based & Range-Inertial SLAM \newline \footnotesize{(GPU Factor Graph)} & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
+    ORB-SLAM3 & Mono/Stereo+IMU & Optimization-Based & Visual-Inertial SLAM \newline \footnotesize{(Feature-based)} & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
+    KISS-ICP & LiDAR & Optimization-Based & LiDAR Odometry \newline \footnotesize{(Adaptive Point-to-Point)} & $\checkmark$ & $\checkmark$ & $\times$ \\
+    RKO-LIO & LiDAR+IMU & Optimization-Based & LiDAR-Inertial Odometry \newline \footnotesize{(Direct ICP)} & $\checkmark$ & $\checkmark$ & $\times$ \\
+    \bottomrule
+  \end{tabular}%
+  }
+\end{table*}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Methodology}
+
+The methodology of this study follows a systematic pipeline designed to evaluate the operational limits of multi-sensor fusion in transitioning environments. The research logic is divided into three primary phases: algorithmic selection, trajectory segmentation, and targeted benchmarking. 
+
+Initially, the selection of the algorithms was determined by the sensor modalities—specifically the availability of high-frequency Inertial Measurement Units (IMU), multi-beam LiDAR, and visual cameras. By choosing frameworks that represent distinct mathematical paradigms (recursive filtering, factor graph optimization, pure visual-inertial, and direct scan-to-map registration), we aim to identify which architecture maintains the highest stability during the geometric and lighting shocks of indoor–outdoor transitions.
+
+\subsection{Dataset and Environmental Segmentation}
+The empirical evaluation was conducted using the Oxford Spires Dataset \cite{tao2025spires}, which provides continuous recordings of a sensor rig traversing highly complex historical university environments. This dataset was selected due to its high-precision terrestrial laser-scanning ground-truth and its contains of indoor-outdoor transition data. 
+
+To isolate the impact of environmental changes on localization stability, the continuous sequences—specifically \texttt{2024-03-20-christ-church-05} and \texttt{2024-03-20-christ-church-02} were temporally segmented into three distinct categories: \textit{Indoor}, \textit{Outdoor}, and \textit{Transition} (Indoor-Outdoor). 
+
+This segmentation was achieved by analysing the dataset's metadata, LiDAR measurements and camera image. Based on data records exact timestamps when the sensor rig crossed structural boundaries was defined. Specifically, timestamps corresponding to narrow doorways allow to determine:
+\begin{itemize}
+    \item \textbf{Indoor/Outdoor Phases:} Computed as the periods strictly occurring between boundary crossings, ensuring the algorithms were exposed to fully enclosed structures or fully open area.
+    \item \textbf{Transition Phases:} To capture the ``stability shock", the transitional segments were defined as the immediate temporal windows surrounding the threshold crossings (e.g., exiting a doorway). This isolates the exact moments where algorithms must renegotiate sensor confidence, handle sudden feature loss, or recover from intense illumination changes.
+\end{itemize}
+
+\begin{figure*}
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{fig/trajectory_splits_christ-church-02.png}
+  \label{fig:trajectory_splits_christ-church-02}
+\end{subfigure}
+    \hfill%
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{fig/trajectory_splits_christ-church-05.png}
+  \label{fig:trajectory_splits_christ-church-05}
+\end{subfigure}
+\caption{The plots of trajectory splits for Indoor, Outdoor and Transition (Indoor-Outdoor) for tested sequences}
+\label{fig:trajectory_splits}
+\end{figure*}
+
+\subsection{Metrics}
+To quantify localization accuracy across the segmented phases, our evaluation employs two complementary metrics: Relative Pose Error (RPE) and Absolute Pose Error (APE). While RPE is specifically designed to capture local trajectory consistency and frame-to-frame tracking accuracy over fixed intervals, APE measures the global drift and absolute trajectory deviation from the ground truth within that segment \cite{grupp2017evo}. 
+
+The relative pose error matrix for a time step $i$ over a fixed spatial or temporal interval $\Delta t$ is defined mathematically by aligning the estimated and reference relative transformations:
+\begin{equation}
+    \mathbf{E}_{RPE,i} = \left( \mathbf{T}_{ref,i}^{-1} \mathbf{T}_{ref,i+\Delta t} \right)^{-1} \left( \mathbf{T}_{est,i}^{-1} \mathbf{T}_{est,i+\Delta t} \right) \in SE(3)
+\end{equation}
+Conversely, the absolute pose error evaluates the global consistency of the estimated pose:
+\begin{equation}
+    \mathbf{E}_{APE,i} = \mathbf{T}_{ref,i}^{-1} \mathbf{T}_{est,i} \in SE(3)
+\end{equation}
+
+To determine the exact positional error for each discrete state, we extract the $L_2$ norm of the translation component from the error matrices. This yields the point-wise Euclidean distance error for that specific local frame:
+\begin{equation}
+    e_i = \left\| \text{trans}(\mathbf{E}_i) \right\|_2
+\end{equation}
+
+Finally, to aggregate these exact point-wise errors over a specific segmented patch (e.g., an indoor corridor or an outdoor courtyard) containing $N$ poses, we extract two summary statistics. The Root Mean Square Error (RMSE) is computed to evaluate the overall expected accuracy:
+\begin{equation}
+    RMSE = \sqrt{\frac{1}{N} \sum_{i=1}^{N} e_i^2}
+\end{equation}
+Additionally, we record the Maximum Error ($Max = \max_{i=1}^{N} e_i$) to capture instantaneous, severe tracking divergences or ``stability shocks." By calculating both RMSE and Max statistics across isolated Indoor, Outdoor, and Transition segments, we can objectively identify algorithmic vulnerabilities that are typically obscured when looking only at full-trajectory averages.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Results}
+The empirical results are divided into three distinct operational phases: strictly indoor, strictly outdoor, and the transition threshold. To highlight the most robust frameworks, the best-performing (lowest error) algorithm for each specific segment and the overall average are marked in \textbf{bold}.
+
+\subsection{Indoor Environments}
+In strictly indoor environments (Tables~\ref{tab:results-indoor-rpe-rmse} to \ref{tab:results-indoor-ape-max}), the optimization-based \textbf{GLIM} framework demonstrates the most consistent performance, achieving the best overall average RPE RMSE ($0.022$ m in Seq 02 and $0.032$ m in Seq 05). This superior local consistency translates to exceptional global stability, as GLIM also records the lowest APE Max values (averaging just $0.166$ m in Seq 05). This stability can be attributed to its GPU-accelerated factor graph, which excels at registering point clouds against structured geometric constraints such as walls and corridors. 
+
+\textbf{RKO-LIO} closely follows as the second-best, maintaining a highly stable average RPE RMSE of $0.042$ m and $0.043$ m across both sequences. Notably, FAST-LIO2 experienced a catastrophic tracking failure in the first indoor segment of Sequence 02; while its local RPE spiked to a maximum of $82.401$ m, its global APE Max diverged completely, exceeding $5900$ m. Meanwhile, the purely visual ORB-SLAM3 saw its performance severely degrade, particularly in Sequence 05 (averaging $0.347$ m in RPE RMSE and reaching up to $8.057$ m in APE Max), highlighting the vulnerability of cameras to featureless walls and motion blur.
+
+
+% ==================================================
+% CATEGORY GROUP: INDOOR
+% ==================================================
+
+% --- Indoor Table (RPE RMSE) ---
+\begin{table*}[h!]
+\caption{Detailed RPE RMSE (in m) for Indoor Environments (Combined Seq 02 \& 05)}
+\label{tab:results-indoor-rpe-rmse}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lcccccccc}
+\toprule
+\multirow{2}{*}{Algorithm} & \multicolumn{3}{c}{Seq 02} & \multirow{2}{*}{\textbf{Average}} & \multicolumn{3}{c}{Seq 05} & \multirow{2}{*}{\textbf{Average}} \\
+\cmidrule(lr){2-4} \cmidrule(lr){6-8}
+ & Indoor 1 & Indoor 2 & Indoor 3 & & Indoor 1 & Indoor 2 & Indoor 3 & \\
+\midrule
+FASTLIO & 9.792 & 0.036 & - & 4.914 & 0.055 & 0.183 & 0.061 & 0.099 \\
+GLIM & \textbf{0.023} & \textbf{0.022} & - & \textbf{0.022} & \textbf{0.033} & \textbf{0.020} & \textbf{0.042} & \textbf{0.032} \\
+KISS\_ICP & 0.169 & 0.138 & - & 0.153 & 0.145 & 0.139 & 0.167 & 0.150 \\
+ORBSLAM & 0.102 & 0.158 & - & 0.130 & 0.263 & 0.333 & 0.445 & 0.347 \\
+RKO\_LIO & 0.040 & 0.043 & - & 0.042 & 0.044 & 0.033 & 0.053 & 0.043 \\
+TSformer-VO & 0.069 & 0.073 & - & 0.071 & 0.067 & 0.069 & 0.088 & 0.075 \\
+\bottomrule
+\end{tabular}
+}
+\end{table*}
+
+% --- Indoor Table (RPE Max) ---
+\begin{table*}[h!]
+\caption{Detailed RPE Max (in m) for Indoor Environments (Combined Seq 02 \& 05)}
+\label{tab:results-indoor-rpe-max}
+\begin{tabular}{lcccccc}
+\toprule
+\multirow{2}{*}{Algorithm} & \multicolumn{3}{c}{Seq 02} & \multicolumn{3}{c}{Seq 05} \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7}
+ & Indoor 1 & Indoor 2 & Indoor 3 & Indoor 1 & Indoor 2 & Indoor 3 \\
+\midrule
+FASTLIO & 82.401 & 0.097 & - & 0.563 & 2.137 & 0.191 \\
+GLIM & \textbf{0.139} & \textbf{0.060} & - & \textbf{0.102} & 0.163 & \textbf{0.113} \\
+KISS\_ICP & 0.730 & 0.412 & - & 0.591 & 0.652 & 0.622 \\
+ORBSLAM & 4.421 & 3.176 & - & 1.824 & 5.253 & 4.376 \\
+RKO\_LIO & 0.140 & 0.115 & - & 0.115 & \textbf{0.131} & 0.271 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+% --- Indoor Table (APE RMSE) ---
+\begin{table*}[h!]
+\caption{Detailed APE RMSE (in m) for Indoor Environments (Combined Seq 02 \& 05)}
+\label{tab:results-indoor-ape-rmse}
+\begin{tabular}{lcccccccc}
+\toprule
+\multirow{2}{*}{Algorithm} & \multicolumn{3}{c}{Seq 02} & \multirow{2}{*}{\textbf{Average}} & \multicolumn{3}{c}{Seq 05} & \multirow{2}{*}{\textbf{Average}} \\
+\cmidrule(lr){2-4} \cmidrule(lr){6-8}
+ & Indoor 1 & Indoor 2 & Indoor 3 & & Indoor 1 & Indoor 2 & Indoor 3 & \\
+\midrule
+FASTLIO & 1885.176 & 0.225 & - & 942.701 & 1.496 & 17.560 & 0.559 & 6.538 \\
+GLIM & 0.126 & \textbf{0.038} & - & 0.082 & \textbf{0.040} & 0.085 & \textbf{0.060} & 0.062 \\
+KISS\_ICP & 0.211 & 0.176 & - & 0.193 & 0.173 & 0.197 & 0.228 & 0.199 \\
+ORBSLAM & 0.514 & 0.616 & - & 0.565 & 0.482 & 0.593 & 2.130 & 1.068 \\
+RKO\_LIO & \textbf{0.110} & 0.052 & - & \textbf{0.081} & 0.046 & \textbf{0.058} & 0.071 & \textbf{0.058} \\
+\bottomrule
+\end{tabular}
+
+\end{table*}
+
+% --- Indoor Table (APE Max) ---
+\begin{table*}[h!]
+\caption{Detailed APE Max (in m) for Indoor Environments (Combined Seq 02 \& 05)}
+\label{tab:results-indoor-ape-max}
+\begin{tabular}{lcccccc}
+\toprule
+\multirow{2}{*}{Algorithm} & \multicolumn{3}{c}{Seq 02} & \multicolumn{3}{c}{Seq 05} \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7}
+ & Indoor 1 & Indoor 2 & Indoor 3 & Indoor 1 & Indoor 2 & Indoor 3 \\
+\midrule
+FASTLIO & 5914.812 & 0.482 & - & 3.488 & 28.949 & 1.586 \\
+GLIM & 0.374 & \textbf{0.085} & - & \textbf{0.099} & \textbf{0.240} & \textbf{0.159} \\
+KISS\_ICP & 0.792 & 0.343 & - & 0.702 & 0.744 & 0.672 \\
+ORBSLAM & 3.669 & 2.973 & - & 2.928 & 5.789 & 8.057 \\
+RKO\_LIO & \textbf{0.283} & 0.127 & - & 0.155 & 0.279 & 0.204 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\subsection{Outdoor Environments}
+When navigating wide-baseline outdoor environments (Tables~\ref{tab:results-outdoor-rpe-rmse} to \ref{tab:results-outdoor-ape-max}), \textbf{GLIM} again secures the best overall stability with an average RPE RMSE of $0.024$ m (Seq 02) and $0.039$ m (Seq 05), dominating almost all individual patches. FAST-LIO2 also demonstrated excellent frame-to-frame performance, particularly in Sequence 02 ($0.033$ m average RPE RMSE). However, it experienced a massive tracking deviation in the third segment of Sequence 05; while the RPE RMSE showed an anomaly ($1.114$ m), the APE Max reveals the true scale of the failure, registering a $44.846$ m global drift. 
+
+In contrast to the LiDAR-inertial methods, the purely visual ORB-SLAM3 struggled significantly in unstructured terrain, dropping a segment in Sequence 02 and yielding the highest tracking errors in Sequence 05 (reaching an APE Max of $10.145$ m). The LiDAR-inertial methods (especially GLIM and RKO-LIO) maintained much tighter, predictable error bounds across both sequences, showcasing the reliability of fusing high-frequency IMU data with 3D structural geometry over wide areas.
+
+% ==================================================
+% CATEGORY GROUP: OUTDOOR
+% ==================================================
+
+% --- Outdoor Table (RPE RMSE) ---
+\begin{table*}[h!]
+\caption{Detailed RPE RMSE (in m) for Outdoor Environments (Combined Seq 02 \& 05)}
+\label{tab:results-outdoor-rpe-rmse}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lcccccccccc}
+\toprule
+\multirow{2}{*}{Algorithm} & \multicolumn{4}{c}{Seq 02} & \multirow{2}{*}{\textbf{Average}} & \multicolumn{4}{c}{Seq 05} & \multirow{2}{*}{\textbf{Average}} \\
+\cmidrule(lr){2-5} \cmidrule(lr){7-10}
+ & Outdoor 1 & Outdoor 2 & Outdoor 3 & Outdoor 4 & & Outdoor 1 & Outdoor 2 & Outdoor 3 & Outdoor 4 & \\
+\midrule
+FASTLIO & \textbf{0.037} & 0.048 & 0.038 & 0.009 & 0.033 & 0.037 & 0.090 & 1.114 & 0.028 & 0.317 \\
+GLIM & 0.042 & \textbf{0.026} & \textbf{0.019} & \textbf{0.008} & \textbf{0.024} & \textbf{0.028} & \textbf{0.088} & \textbf{0.027} & \textbf{0.014} & \textbf{0.039} \\
+KISS\_ICP & 0.262 & 0.142 & 0.165 & 0.044 & 0.153 & 0.303 & 0.150 & 0.180 & 0.125 & 0.190 \\
+ORBSLAM & 0.111 & 0.190 & 0.179 & - & 0.160 & 0.356 & 0.695 & 0.744 & 0.213 & 0.502 \\
+RKO\_LIO & 0.058 & 0.046 & 0.049 & 0.027 & 0.045 & 0.043 & 0.096 & 0.037 & 0.040 & 0.054 \\
+TSformer-VO & 0.064 & 0.066 & 0.066 & 0.193 & 0.097 & 0.058 & 0.050 & 0.105 & 0.135 & 0.087 \\
+\bottomrule
+\end{tabular}
+}
+\end{table*}
+
+% --- Outdoor Table (RPE Max) ---
+\begin{table*}[h!]
+\caption{Detailed RPE Max (in m) for Outdoor Environments (Combined Seq 02 \& 05)}
+\label{tab:results-outdoor-rpe-max}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lcccccccc}
+\toprule
+\multirow{2}{*}{Algorithm} & \multicolumn{4}{c}{Seq 02} & \multicolumn{4}{c}{Seq 05} \\
+\cmidrule(lr){2-5} \cmidrule(lr){6-9}
+ & Outdoor 1 & Outdoor 2 & Outdoor 3 & Outdoor 4 & Outdoor 1 & Outdoor 2 & Outdoor 3 & Outdoor 4 \\
+\midrule
+FASTLIO & \textbf{0.196} & 0.208 & 0.225 & 0.029 & 0.162 & \textbf{0.141} & 3.382 & 0.133 \\
+GLIM & 0.393 & \textbf{0.083} & \textbf{0.062} & \textbf{0.019} & 0.191 & 0.147 & \textbf{0.069} & \textbf{0.073} \\
+KISS\_ICP & 1.037 & 0.268 & 0.415 & 0.115 & 1.438 & 0.269 & 0.425 & 0.376 \\
+ORBSLAM & 3.385 & 2.012 & 3.196 & - & 4.326 & 4.375 & 3.573 & 0.613 \\
+RKO\_LIO & 0.278 & 0.101 & 0.193 & 0.092 & \textbf{0.144} & 0.164 & 0.087 & 0.110 \\
+\bottomrule
+\end{tabular}
+}
+\end{table*}
+
+% --- Outdoor Table (APE RMSE) ---
+\begin{table*}[h!]
+\caption{Detailed APE RMSE (in m) for Outdoor Environments (Combined Seq 02 \& 05)}
+\label{tab:results-outdoor-ape-rmse}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lcccccccccc}
+\toprule
+\multirow{2}{*}{Algorithm} & \multicolumn{4}{c}{Seq 02} & \multirow{2}{*}{\textbf{Average}} & \multicolumn{4}{c}{Seq 05} & \multirow{2}{*}{\textbf{Average}} \\
+\cmidrule(lr){2-5} \cmidrule(lr){7-10}
+ & Outdoor 1 & Outdoor 2 & Outdoor 3 & Outdoor 4 & & Outdoor 1 & Outdoor 2 & Outdoor 3 & Outdoor 4 & \\
+\midrule
+FASTLIO & 1.046 & 0.145 & 0.209 & \textbf{0.010} & 0.353 & 0.625 & \textbf{0.055} & 15.623 & 0.144 & 4.112 \\
+GLIM & 1.710 & \textbf{0.029} & \textbf{0.036} & 0.012 & 0.447 & \textbf{0.059} & 0.055 & 0.046 & \textbf{0.026} & \textbf{0.046} \\
+KISS\_ICP & 0.313 & 0.133 & 0.198 & 0.056 & 0.175 & 0.317 & 0.131 & 0.185 & 0.156 & 0.198 \\
+ORBSLAM & 1.994 & 0.568 & 0.661 & - & 1.074 & 1.493 & 1.904 & 2.396 & 0.905 & 1.674 \\
+RKO\_LIO & \textbf{0.138} & 0.038 & 0.050 & 0.041 & \textbf{0.067} & 0.098 & 0.067 & \textbf{0.044} & 0.053 & 0.066 \\
+\bottomrule
+\end{tabular}
+}
+\end{table*}
+
+% --- Outdoor Table (APE Max) ---
+\begin{table*}[h!]
+\caption{Detailed APE Max (in m) for Outdoor Environments (Combined Seq 02 \& 05)}
+\label{tab:results-outdoor-ape-max}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lcccccccc}
+\toprule
+\multirow{2}{*}{Algorithm} & \multicolumn{4}{c}{Seq 02} & \multicolumn{4}{c}{Seq 05} \\
+\cmidrule(lr){2-5} \cmidrule(lr){6-9}
+ & Outdoor 1 & Outdoor 2 & Outdoor 3 & Outdoor 4 & Outdoor 1 & Outdoor 2 & Outdoor 3 & Outdoor 4 \\
+\midrule
+FASTLIO & 1.948 & 0.340 & 0.474 & 0.029 & 1.761 & \textbf{0.114} & 44.846 & 0.232 \\
+GLIM & 4.290 & \textbf{0.069} & \textbf{0.102} & \textbf{0.024} & \textbf{0.156} & 0.129 & 0.135 & \textbf{0.068} \\
+KISS\_ICP & 1.035 & 0.238 & 0.529 & 0.108 & 1.597 & 0.253 & 0.412 & 0.372 \\
+ORBSLAM & 4.859 & 1.724 & 2.754 & - & 10.145 & 4.212 & 3.819 & 1.430 \\
+RKO\_LIO & \textbf{0.539} & 0.078 & 0.148 & 0.104 & 0.264 & 0.159 & \textbf{0.098} & 0.149 \\
+\bottomrule
+\end{tabular}
+}
+\end{table*}
+
+
+\subsection{Indoor-Outdoor Transitions}
+The transition segments (Tables~\ref{tab:results-transition-indoor-outdoor-rpe-rmse} to \ref{tab:results-transition-indoor-outdoor-ape-max}) represent the core focus of this study, capturing the exact temporal window where the robot crosses an architectural threshold. 
+
+\textbf{GLIM} demonstrates the highest resilience to these shocks, achieving the absolute lowest overall average tracking errors ($0.028$ m in Seq 02 and $0.030$ m in Seq 05 for RPE RMSE). Its success is driven by its sliding-window factor graph, which maintains historical constraints from the previous environment to smooth the transition. This resilience is perfectly captured by its maximum error bounds; while other algorithms spiked, GLIM's APE Max averaged a mere $0.137$ m and $0.136$ m during these aggressive environmental shifts. FAST-LIO2 and RKO-LIO also performed admirably on average, leveraging their IMU pre-integration to bridge the split-second structural ambiguity of a doorway crossing.
+
+Conversely, ORB-SLAM3 suffered heavily during these architectural and lighting changes, demonstrating the true ``stability shock" phenomenon. It yielded the highest errors across both sequences and experienced severe momentary tracking divergences—such as reaching an APE Max of $5.005$ m in Sequence 02 (Trans 3) and $7.453$ m in Sequence 05 (Trans 3). This illustrates that while visual systems can work adequately under stable illumination, sudden exposure changes during a physical transition can fatally compromise global tracking stability.
+
+% ==================================================
+% CATEGORY GROUP: TRANSITION (INDOOR-OUTDOOR)
+% ==================================================
+
+% --- Transition (Indoor-Outdoor) Table (RPE RMSE) ---
+\begin{table*}[h!]
+\caption{Detailed RPE RMSE (in m) for Transition (Indoor-Outdoor) Environments (Combined Seq 02 \& 05)}
+\label{tab:results-transition-indoor-outdoor-rpe-rmse}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lccccccccc}
+\toprule
+\multirow{2}{*}{Algorithm} & \multicolumn{3}{c}{Seq 02} & \multirow{2}{*}{\textbf{Average}} & \multicolumn{4}{c}{Seq 05} & \multirow{2}{*}{\textbf{Average}} \\
+\cmidrule(lr){2-4} \cmidrule(lr){6-9}
+ & Trans 1 & Trans 2 & Trans 3 & & Trans 1 & Trans 2 & Trans 3 & Trans 4 & \\
+\midrule
+FASTLIO & 0.093 & 0.089 & 0.037 & 0.073 & 0.032 & 0.047 & 0.064 & 0.052 & 0.049 \\
+GLIM & \textbf{0.037} & \textbf{0.024} & \textbf{0.024} & \textbf{0.028} & \textbf{0.020} & \textbf{0.028} & \textbf{0.034} & \textbf{0.039} & \textbf{0.030} \\
+KISS\_ICP & 0.253 & 0.171 & 0.145 & 0.190 & 0.216 & 0.224 & 0.183 & 0.184 & 0.202 \\
+ORBSLAM & 0.300 & 0.132 & 0.465 & 0.299 & 0.262 & 1.274 & 0.361 & 0.492 & 0.598 \\
+RKO\_LIO & 0.050 & 0.044 & 0.041 & 0.045 & 0.046 & 0.072 & 0.048 & 0.059 & 0.056 \\
+TSformer-VO & 0.064 & 0.056 & 0.170 & 0.097 & 0.0807 & 0.057 & 0.074 & 0.137 & 0.087 \\
+\bottomrule
+\end{tabular}
+}
+\end{table*}
+
+% --- Transition (Indoor-Outdoor) Table (RPE Max) ---
+\begin{table*}[h!]
+\caption{Detailed RPE Max (in m) for Transition (Indoor-Outdoor) Environments (Combined Seq 02 \& 05)}
+\label{tab:results-transition-indoor-outdoor-rpe-max}
+\begin{tabular}{lccccccc}
+\toprule
+\multirow{2}{*}{Algorithm} & \multicolumn{3}{c}{Seq 02} & \multicolumn{4}{c}{Seq 05} \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-8}
+ & Trans 1 & Trans 2 & Trans 3 & Trans 1 & Trans 2 & Trans 3 & Trans 4 \\
+\midrule
+FASTLIO & 0.420 & 0.793 & 0.101 & 0.096 & 0.297 & 0.512 & 0.129 \\
+GLIM & 0.156 & \textbf{0.100} & \textbf{0.073} & \textbf{0.071} & \textbf{0.085} & \textbf{0.146} & \textbf{0.125} \\
+KISS\_ICP & 1.021 & 0.742 & 0.340 & 0.615 & 0.600 & 0.599 & 0.568 \\
+ORBSLAM & 4.224 & 3.780 & 4.571 & 0.634 & 8.548 & 4.415 & 1.387 \\
+RKO\_LIO & \textbf{0.130} & 0.198 & 0.117 & 0.176 & 0.163 & 0.162 & 0.140 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+% --- Transition (Indoor-Outdoor) Table (APE RMSE) ---
+\begin{table*}[h!]
+\caption{Detailed APE RMSE (in m) for Transition (Indoor-Outdoor) Environments (Combined Seq 02 \& 05)}
+\label{tab:results-transition-indoor-outdoor-ape-rmse}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lccccccccc}
+\toprule
+\multirow{2}{*}{Algorithm} & \multicolumn{3}{c}{Seq 02} & \multirow{2}{*}{\textbf{Average}} & \multicolumn{4}{c}{Seq 05} & \multirow{2}{*}{\textbf{Average}} \\
+\cmidrule(lr){2-4} \cmidrule(lr){6-9}
+ & Trans 1 & Trans 2 & Trans 3 & & Trans 1 & Trans 2 & Trans 3 & Trans 4 & \\
+\midrule
+FASTLIO & 0.241 & 5.802 & 0.065 & 2.036 & 0.090 & 0.351 & 1.870 & 0.071 & 0.596 \\
+GLIM & \textbf{0.034} & 0.055 & \textbf{0.028} & \textbf{0.039} & \textbf{0.025} & \textbf{0.031} & 0.075 & \textbf{0.038} & \textbf{0.042} \\
+KISS\_ICP & 0.238 & 0.195 & 0.141 & 0.191 & 0.203 & 0.250 & 0.244 & 0.168 & 0.216 \\
+ORBSLAM & 1.011 & 1.584 & 1.609 & 1.401 & 1.451 & 3.167 & 1.321 & 2.371 & 2.077 \\
+RKO\_LIO & 0.052 & \textbf{0.052} & 0.040 & 0.048 & 0.046 & 0.076 & \textbf{0.063} & 0.050 & 0.059 \\
+\bottomrule
+\end{tabular}
+}
+\end{table*}
+
+% --- Transition (Indoor-Outdoor) Table (APE Max) ---
+\begin{table*}[h!]
+\caption{Detailed APE Max (in m) for Transition (Indoor-Outdoor) Environments (Combined Seq 02 \& 05)}
+\label{tab:results-transition-indoor-outdoor-ape-max}
+\begin{tabular}{lccccccc}
+\toprule
+\multirow{2}{*}{Algorithm} & \multicolumn{3}{c}{Seq 02} & \multicolumn{4}{c}{Seq 05} \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-8}
+ & Trans 1 & Trans 2 & Trans 3 & Trans 1 & Trans 2 & Trans 3 & Trans 4 \\
+\midrule
+FASTLIO & 0.450 & 7.865 & 0.169 & 0.163 & 0.489 & 3.944 & 0.190 \\
+GLIM & \textbf{0.123} & 0.225 & \textbf{0.065} & \textbf{0.068} & \textbf{0.097} & 0.267 & \textbf{0.111} \\
+KISS\_ICP & 0.744 & 0.656 & 0.304 & 0.552 & 0.642 & 0.623 & 0.463 \\
+ORBSLAM & 3.435 & 3.938 & 5.005 & 2.335 & 5.395 & 7.453 & 5.440 \\
+RKO\_LIO & 0.131 & \textbf{0.167} & 0.123 & 0.185 & 0.145 & \textbf{0.162} & 0.128 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusions and Future Work}
+This study empirically demonstrated that while state-of-the-art LiDAR-inertial and visual-inertial odometry systems achieve remarkable accuracy in strictly homogeneous environments, their stability is severely challenged during abrupt indoor-outdoor transitions. Optimization-based frameworks with sliding-window historical constraints (e.g., GLIM \cite{Koide_2024}) exhibited the highest resilience against ``stability shocks", whereas vision-dependent systems (e.g., ORB-SLAM3 \cite{ORB-SLAM3}) proved vulnerable to transient exposure anomalies despite maintaining tight local accuracy under stable lighting.
+
+The vulnerabilities identified in this benchmark directly inform our future research trajectory. To achieve true mixed-environment autonomy, reliance on rigid, single-paradigm state estimators is insufficient. Our future work will focus on the following key directions:
+\begin{itemize}
+    \item \textbf{Adaptive Multi-Modal Data Fusion:} We plan to develop a tightly-coupled, dynamically weighted sensor fusion algorithm. By monitoring the real-time covariance stability and geometric degeneracy metrics (e.g., eigenvalue analysis of the point cloud covariance), the proposed system will adaptively shift trust between visual, LiDAR, and inertial constraints during threshold crossings.
+    \item \textbf{GNSS/RTK Integration for Global Consistency:} While this study focused on local RPE to isolate transition shocks, long-term outdoor navigation necessitates absolute positioning. Future frameworks will incorporate RTK-GNSS factors into the optimization graph, with specific emphasis on handling multi-path effects and signal degradation at the urban canyon/indoor boundary.
+    \item \textbf{Robustness in Degraded Conditions:} The benchmark will be expanded to include datasets featuring adverse weather (rain, fog) and low-light scenarios, which commonly affect industrial mobile robots. This will test the limits of LiDAR intensity returns and sensor-agnostic modeling in maintaining odometry continuity.
+\end{itemize}
+Ultimately, the insights gained from isolating these transitional failures serve as the foundational baseline for our ongoing development of a novel, transition-aware localization algorithm tailored for industrial mobile robotics.
+\backmatter
+
+\bmhead{Supplementary information}
+
+If your article has accompanying supplementary file/s please state so here. 
+
+Authors reporting data from electrophoretic gels and blots should supply the full unprocessed scans for key as part of their Supplementary information. This may be requested by the editorial team/s if it is missing.
+
+Please refer to Journal-level guidance for any specific requirements.
+
+\bmhead{Acknowledgments}
+
+Acknowledgments are not compulsory. Where included they should be brief. Grant or contribution numbers may be acknowledged.
+
+Please refer to Journal-level guidance for any specific requirements.
+\section*{Declarations}
+
+\subsection*{Founding}
+The APC was funded \textcolor{red}{by Warsaw} University of Technology. No funding was received to assist with the preparation of this manuscript.
+
+\subsection*{Conflicts of interest/Competing interests}
+The authors have no conflicts of interest to declare that are relevant to the content of this article.
+
+\subsection*{Data Availability}
+
+\subsection*{Code Availability}
+The authors will share the code used in this paper upon reasonable request.
+
+
+
+
+\subsection*{Authors' Contributions}
+
+\textbf{K.K.} methodology, software, formal analysis, investigation, resources, data curation, writing - original draft preparation.
+
+\noindent
+\textbf{J.D.} conceptualization, supervision, project administration, funding acquisition, writing - review and editing.
+
+\noindent
+\textbf{P.D.} conceptualization, methodology, validation, resources, writing - original draft preparation, writing - review and editing.
+
+
+\subsection*{Acknowledgments}
+Not applicable
+
+\subsection*{Ethics approval}
+Not applicable
+
+\subsection*{Consent to participate}
+Not applicable
+
+\subsection*{Consent for publication}
+Not applicable
+
+\bibliography{sn-bibliography}% common bib file
+%% if required, the content of .bbl file can be included here once bbl is generated
+%%\input sn-article.bbl
+
+
+\end{document}
