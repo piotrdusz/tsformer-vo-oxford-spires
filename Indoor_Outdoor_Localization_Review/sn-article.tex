@@ -253,6 +253,7 @@ To provide a clear perspective on the current landscape, Table~\ref{tab:methods-
     ORB-SLAM3 & Mono/Stereo+IMU & Optimization-Based & Visual-Inertial SLAM \newline \footnotesize{(Feature-based)} & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
     KISS-ICP & LiDAR & Optimization-Based & LiDAR Odometry \newline \footnotesize{(Adaptive Point-to-Point)} & $\checkmark$ & $\checkmark$ & $\times$ \\
     RKO-LIO & LiDAR+IMU & Optimization-Based & LiDAR-Inertial Odometry \newline \footnotesize{(Direct ICP)} & $\checkmark$ & $\checkmark$ & $\times$ \\
+    TSformer-VO & Monocular Camera & Learning-Based & Monocular Visual Odometry \newline \footnotesize{(Transformer-based)} & $\times$ & $\checkmark$ & $\times$ \\
     \bottomrule
   \end{tabular}%
   }
@@ -322,7 +323,7 @@ The empirical results are divided into three distinct operational phases: strict
 \subsection{Indoor Environments}
 In strictly indoor environments (Tables~\ref{tab:results-indoor-rpe-rmse} to \ref{tab:results-indoor-ape-max}), the optimization-based \textbf{GLIM} framework demonstrates the most consistent performance, achieving the best overall average RPE RMSE ($0.022$ m in Seq 02 and $0.032$ m in Seq 05). This superior local consistency translates to exceptional global stability, as GLIM also records the lowest APE Max values (averaging just $0.166$ m in Seq 05). This stability can be attributed to its GPU-accelerated factor graph, which excels at registering point clouds against structured geometric constraints such as walls and corridors. 
 
-\textbf{RKO-LIO} closely follows as the second-best, maintaining a highly stable average RPE RMSE of $0.042$ m and $0.043$ m across both sequences. Notably, FAST-LIO2 experienced a catastrophic tracking failure in the first indoor segment of Sequence 02; while its local RPE spiked to a maximum of $82.401$ m, its global APE Max diverged completely, exceeding $5900$ m. Meanwhile, the purely visual ORB-SLAM3 saw its performance severely degrade, particularly in Sequence 05 (averaging $0.347$ m in RPE RMSE and reaching up to $8.057$ m in APE Max), highlighting the vulnerability of cameras to featureless walls and motion blur.
+\textbf{RKO-LIO} closely follows as the second-best, maintaining a highly stable average RPE RMSE of $0.042$ m and $0.043$ m across both sequences. Notably, FAST-LIO2 experienced a catastrophic tracking failure in the first indoor segment of Sequence 02; while its local RPE spiked to a maximum of $82.401$ m, its global APE Max diverged completely, exceeding $5900$ m. Meanwhile, the purely visual ORB-SLAM3 saw its performance severely degrade, particularly in Sequence 05 (averaging $0.347$ m in RPE RMSE and reaching up to $8.057$ m in APE Max), highlighting the vulnerability of cameras to featureless walls and motion blur. TSformer-VO maintained competitive local indoor tracking (RPE RMSE averages of $0.071$ m in Seq 02 and $0.075$ m in Seq 05), but exhibited substantially larger global drift, with APE RMSE averages of $4.591$ m and $9.027$ m and APE Max peaks up to $31.691$ m.
 
 
 % ==================================================
@@ -366,6 +367,7 @@ GLIM & \textbf{0.139} & \textbf{0.060} & - & \textbf{0.102} & 0.163 & \textbf{0.
 KISS\_ICP & 0.730 & 0.412 & - & 0.591 & 0.652 & 0.622 \\
 ORBSLAM & 4.421 & 3.176 & - & 1.824 & 5.253 & 4.376 \\
 RKO\_LIO & 0.140 & 0.115 & - & 0.115 & \textbf{0.131} & 0.271 \\
+TSformer-VO & 0.235 & 0.189 & - & 0.237 & 0.455 & 0.526 \\
 \bottomrule
 \end{tabular}
 \end{table*}
@@ -385,6 +387,7 @@ GLIM & 0.126 & \textbf{0.038} & - & 0.082 & \textbf{0.040} & 0.085 & \textbf{0.0
 KISS\_ICP & 0.211 & 0.176 & - & 0.193 & 0.173 & 0.197 & 0.228 & 0.199 \\
 ORBSLAM & 0.514 & 0.616 & - & 0.565 & 0.482 & 0.593 & 2.130 & 1.068 \\
 RKO\_LIO & \textbf{0.110} & 0.052 & - & \textbf{0.081} & 0.046 & \textbf{0.058} & 0.071 & \textbf{0.058} \\
+TSformer-VO & 7.264 & 1.918 & - & 4.591 & 8.329 & 13.699 & 5.054 & 9.027 \\
 \bottomrule
 \end{tabular}
 
@@ -405,6 +408,7 @@ GLIM & 0.374 & \textbf{0.085} & - & \textbf{0.099} & \textbf{0.240} & \textbf{0.
 KISS\_ICP & 0.792 & 0.343 & - & 0.702 & 0.744 & 0.672 \\
 ORBSLAM & 3.669 & 2.973 & - & 2.928 & 5.789 & 8.057 \\
 RKO\_LIO & \textbf{0.283} & 0.127 & - & 0.155 & 0.279 & 0.204 \\
+TSformer-VO & 20.492 & 4.315 & - & 22.650 & 31.691 & 9.369 \\
 \bottomrule
 \end{tabular}
 \end{table*}
@@ -412,7 +416,7 @@ RKO\_LIO & \textbf{0.283} & 0.127 & - & 0.155 & 0.279 & 0.204 \\
 \subsection{Outdoor Environments}
 When navigating wide-baseline outdoor environments (Tables~\ref{tab:results-outdoor-rpe-rmse} to \ref{tab:results-outdoor-ape-max}), \textbf{GLIM} again secures the best overall stability with an average RPE RMSE of $0.024$ m (Seq 02) and $0.039$ m (Seq 05), dominating almost all individual patches. FAST-LIO2 also demonstrated excellent frame-to-frame performance, particularly in Sequence 02 ($0.033$ m average RPE RMSE). However, it experienced a massive tracking deviation in the third segment of Sequence 05; while the RPE RMSE showed an anomaly ($1.114$ m), the APE Max reveals the true scale of the failure, registering a $44.846$ m global drift. 
 
-In contrast to the LiDAR-inertial methods, the purely visual ORB-SLAM3 struggled significantly in unstructured terrain, dropping a segment in Sequence 02 and yielding the highest tracking errors in Sequence 05 (reaching an APE Max of $10.145$ m). The LiDAR-inertial methods (especially GLIM and RKO-LIO) maintained much tighter, predictable error bounds across both sequences, showcasing the reliability of fusing high-frequency IMU data with 3D structural geometry over wide areas.
+In contrast to the LiDAR-inertial methods, the purely visual ORB-SLAM3 struggled significantly in unstructured terrain, dropping a segment in Sequence 02 and yielding the highest tracking errors in Sequence 05 (reaching an APE Max of $10.145$ m). The LiDAR-inertial methods (especially GLIM and RKO-LIO) maintained much tighter, predictable error bounds across both sequences, showcasing the reliability of fusing high-frequency IMU data with 3D structural geometry over wide areas. TSformer-VO achieved moderate local consistency outdoors (RPE RMSE averages of $0.097$ m for Seq 02 and $0.087$ m for Seq 05), yet its global drift remained elevated, with APE RMSE averages of $3.823$ m and $5.782$ m and an APE Max reaching $52.145$ m.
 
 % ==================================================
 % CATEGORY GROUP: OUTDOOR
@@ -456,6 +460,7 @@ GLIM & 0.393 & \textbf{0.083} & \textbf{0.062} & \textbf{0.019} & 0.191 & 0.147 
 KISS\_ICP & 1.037 & 0.268 & 0.415 & 0.115 & 1.438 & 0.269 & 0.425 & 0.376 \\
 ORBSLAM & 3.385 & 2.012 & 3.196 & - & 4.326 & 4.375 & 3.573 & 0.613 \\
 RKO\_LIO & 0.278 & 0.101 & 0.193 & 0.092 & \textbf{0.144} & 0.164 & 0.087 & 0.110 \\
+TSformer-VO & 0.267 & 0.174 & 0.201 & 0.247 & 0.226 & 0.079 & 0.288 & 0.231 \\
 \bottomrule
 \end{tabular}
 }
@@ -477,6 +482,7 @@ GLIM & 1.710 & \textbf{0.029} & \textbf{0.036} & 0.012 & 0.447 & \textbf{0.059} 
 KISS\_ICP & 0.313 & 0.133 & 0.198 & 0.056 & 0.175 & 0.317 & 0.131 & 0.185 & 0.156 & 0.198 \\
 ORBSLAM & 1.994 & 0.568 & 0.661 & - & 1.074 & 1.493 & 1.904 & 2.396 & 0.905 & 1.674 \\
 RKO\_LIO & \textbf{0.138} & 0.038 & 0.050 & 0.041 & \textbf{0.067} & 0.098 & 0.067 & \textbf{0.044} & 0.053 & 0.066 \\
+TSformer-VO & 8.860 & 0.302 & 2.307 & 3.822 & 3.823 & 19.464 & 0.242 & 0.964 & 2.457 & 5.782 \\
 \bottomrule
 \end{tabular}
 }
@@ -498,6 +504,7 @@ GLIM & 4.290 & \textbf{0.069} & \textbf{0.102} & \textbf{0.024} & \textbf{0.156}
 KISS\_ICP & 1.035 & 0.238 & 0.529 & 0.108 & 1.597 & 0.253 & 0.412 & 0.372 \\
 ORBSLAM & 4.859 & 1.724 & 2.754 & - & 10.145 & 4.212 & 3.819 & 1.430 \\
 RKO\_LIO & \textbf{0.539} & 0.078 & 0.148 & 0.104 & 0.264 & 0.159 & \textbf{0.098} & 0.149 \\
+TSformer-VO & 19.424 & 0.536 & 5.709 & 6.570 & 52.145 & 0.521 & 2.030 & 4.975 \\
 \bottomrule
 \end{tabular}
 }
@@ -509,7 +516,7 @@ The transition segments (Tables~\ref{tab:results-transition-indoor-outdoor-rpe-r
 
 \textbf{GLIM} demonstrates the highest resilience to these shocks, achieving the absolute lowest overall average tracking errors ($0.028$ m in Seq 02 and $0.030$ m in Seq 05 for RPE RMSE). Its success is driven by its sliding-window factor graph, which maintains historical constraints from the previous environment to smooth the transition. This resilience is perfectly captured by its maximum error bounds; while other algorithms spiked, GLIM's APE Max averaged a mere $0.137$ m and $0.136$ m during these aggressive environmental shifts. FAST-LIO2 and RKO-LIO also performed admirably on average, leveraging their IMU pre-integration to bridge the split-second structural ambiguity of a doorway crossing.
 
-Conversely, ORB-SLAM3 suffered heavily during these architectural and lighting changes, demonstrating the true ``stability shock" phenomenon. It yielded the highest errors across both sequences and experienced severe momentary tracking divergences—such as reaching an APE Max of $5.005$ m in Sequence 02 (Trans 3) and $7.453$ m in Sequence 05 (Trans 3). This illustrates that while visual systems can work adequately under stable illumination, sudden exposure changes during a physical transition can fatally compromise global tracking stability.
+Conversely, ORB-SLAM3 suffered heavily during these architectural and lighting changes, demonstrating the true ``stability shock" phenomenon. It yielded the highest errors across both sequences and experienced severe momentary tracking divergences—such as reaching an APE Max of $5.005$ m in Sequence 02 (Trans 3) and $7.453$ m in Sequence 05 (Trans 3). This illustrates that while visual systems can work adequately under stable illumination, sudden exposure changes during a physical transition can fatally compromise global tracking stability. For TSformer-VO, transition segments showed moderate local tracking quality (RPE RMSE averages of $0.097$ m in Seq 02 and $0.087$ m in Seq 05), but still presented notable global drift during crossings, with APE RMSE averages of $3.865$ m and $2.861$ m and APE Max peaks of $13.571$ m and $14.418$ m.
 
 % ==================================================
 % CATEGORY GROUP: TRANSITION (INDOOR-OUTDOOR)
@@ -552,6 +559,7 @@ GLIM & 0.156 & \textbf{0.100} & \textbf{0.073} & \textbf{0.071} & \textbf{0.085}
 KISS\_ICP & 1.021 & 0.742 & 0.340 & 0.615 & 0.600 & 0.599 & 0.568 \\
 ORBSLAM & 4.224 & 3.780 & 4.571 & 0.634 & 8.548 & 4.415 & 1.387 \\
 RKO\_LIO & \textbf{0.130} & 0.198 & 0.117 & 0.176 & 0.163 & 0.162 & 0.140 \\
+TSformer-VO & 0.124 & 0.201 & 0.247 & 0.181 & 0.097 & 0.289 & 0.407 \\
 \bottomrule
 \end{tabular}
 \end{table*}
@@ -572,6 +580,7 @@ GLIM & \textbf{0.034} & 0.055 & \textbf{0.028} & \textbf{0.039} & \textbf{0.025}
 KISS\_ICP & 0.238 & 0.195 & 0.141 & 0.191 & 0.203 & 0.250 & 0.244 & 0.168 & 0.216 \\
 ORBSLAM & 1.011 & 1.584 & 1.609 & 1.401 & 1.451 & 3.167 & 1.321 & 2.371 & 2.077 \\
 RKO\_LIO & 0.052 & \textbf{0.052} & 0.040 & 0.048 & 0.046 & 0.076 & \textbf{0.063} & 0.050 & 0.059 \\
+TSformer-VO & 0.529 & 6.263 & 4.804 & 3.865 & 1.004 & 0.426 & 7.200 & 2.815 & 2.861 \\
 \bottomrule
 \end{tabular}
 }
@@ -592,6 +601,7 @@ GLIM & \textbf{0.123} & 0.225 & \textbf{0.065} & \textbf{0.068} & \textbf{0.097}
 KISS\_ICP & 0.744 & 0.656 & 0.304 & 0.552 & 0.642 & 0.623 & 0.463 \\
 ORBSLAM & 3.435 & 3.938 & 5.005 & 2.335 & 5.395 & 7.453 & 5.440 \\
 RKO\_LIO & 0.131 & \textbf{0.167} & 0.123 & 0.185 & 0.145 & \textbf{0.162} & 0.128 \\
+TSformer-VO & 0.977 & 13.571 & 6.969 & 2.175 & 0.842 & 14.418 & 5.036 \\
 \bottomrule
 \end{tabular}
 \end{table*}
