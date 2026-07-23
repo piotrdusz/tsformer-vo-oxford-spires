@@ -293,6 +293,17 @@ This segmentation was achieved by analysing the dataset's metadata, LiDAR measur
 \label{fig:trajectory_splits}
 \end{figure*}
 
+\subsection{Learning-Based Baseline Protocol (TSformer-VO)}
+To avoid data leakage while still enabling evaluation on both target routes, two separate TSformer-VO models were trained. One model was trained on all selected Oxford Spires sequences with available ground-truth poses except \texttt{christ\_church\_02}, and the second model used the same training pool except \texttt{christ\_church\_05}. In each case, the excluded route was used only for final testing.
+
+For validation, we used cyclic sequence-level cross-validation during training: at each epoch, one full training sequence was selected as validation and the remaining sequences were used for optimization. This protocol preserves temporal coherence within each route and avoids mixing samples from the same route between train and validation within an epoch.
+
+Input images were generated from Oxford Spires trajectories downsampled from 20 Hz to 5 Hz to match the \texttt{christ\_church\_05} acquisition rate. Ground-truth poses were matched to image timestamps using nearest-neighbor timestamp association. All frames were resized to $192\times640$ and normalized with fixed RGB mean/std values. No data augmentation was applied.
+
+Model initialization used the authors' pretrained TSformer checkpoint \texttt{checkpoint\_model1\_exp12}. The predicted output is a flattened vector of relative poses for each temporal window ($6\times(\texttt{window\_size}-1)$), with supervision built from relative SE(3) motion between consecutive matched frames, represented as Euler angles plus translation and normalized using fixed statistics.
+
+Optimization used Adam with batch size $8$, learning rate $10^{-5}$, momentum $0.9$, weight decay $10^{-4}$, and up to $100$ epochs. The loss was MSE on the pose vector, with model selection based on best validation loss. Training was performed on one NVIDIA A100 40 GiB GPU with 64 GB RAM allocation; the approximate training time was 44 hours.
+
 \subsection{Metrics}
 To quantify localization accuracy across the segmented phases, our evaluation employs two complementary metrics: Relative Pose Error (RPE) and Absolute Pose Error (APE). While RPE is specifically designed to capture local trajectory consistency and frame-to-frame tracking accuracy over fixed intervals, APE measures the global drift and absolute trajectory deviation from the ground truth within that segment \cite{grupp2017evo}. 
 
@@ -661,7 +672,7 @@ The authors will share the code used in this paper upon reasonable request.
 
 
 \subsection*{Acknowledgments}
-Not applicable
+This research was carried out with the support of the High Performance Computing Center at Faculty of Mathematics and Information Science Warsaw University of Technology.
 
 \subsection*{Ethics approval}
 Not applicable
