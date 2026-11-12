@@ -34,18 +34,16 @@
 	address = {Oulu, Finland}
 }
 
-@Article{robotics12020047,
-AUTHOR = {Huang, Jiahao and Junginger, Steffen and Liu, Hui and Thurow, Kerstin},
-TITLE = {Indoor Positioning Systems of Mobile Robots: A Review},
-JOURNAL = {Robotics},
-VOLUME = {12},
-YEAR = {2023},
-NUMBER = {2},
-ARTICLE-NUMBER = {47},
-URL = {https://www.mdpi.com/2218-6581/12/2/47},
-ISSN = {2218-6581},
-ABSTRACT = {Recently, with the in-depth development of Industry 4.0 worldwide, mobile robots have become a research hotspot. Indoor localization has become a key component in many fields and the basis for all actions of mobile robots. This paper screened 147 papers in the field of indoor positioning of mobile robots from 2019 to 2021. First, 12 mainstream indoor positioning methods and related positioning technologies for mobile robots are introduced and compared in detail. Then, the selected papers were summarized. The common attributes and laws were discovered. The development trend of indoor positioning of mobile robots is obtained.},
-DOI = {10.3390/robotics12020047}
+@article{robotics12020047,
+  title={Indoor positioning systems of mobile robots: A review},
+  author={Huang, Jiahao and Junginger, Steffen and Liu, Hui and Thurow, Kerstin},
+  journal={Robotics},
+  volume={12},
+  number={2},
+  pages={47},
+  year={2023},
+  publisher={MDPI},
+  DOI = {10.3390/robotics12020047}
 }
 
 @article{SLAM_steve,
@@ -53,8 +51,9 @@ author = {Macenski, Steve and Jambrecic, Ivona},
 year = {2021},
 month = {05},
 pages = {2783},
-title = {SLAM Toolbox: SLAM for the dynamic world},
+title = {{SLAM} Toolbox: SLAM for the Dynamic World},
 volume = {6},
+number = {61},
 journal = {Journal of Open Source Software},
 doi = {10.21105/joss.02783}
 }
@@ -94,7 +93,7 @@ doi = {10.21105/joss.02783}
 
 @Article{3d-2dlidar,
 AUTHOR = {Liu, Yanjie and Wang, Chao and Wu, Heng and Wei, Yanlong and Ren, Meixuan and Zhao, Changsen},
-TITLE = {Improved LiDAR Localization Method for Mobile Robots Based on Multi-Sensing},
+TITLE = {Improved {LiDAR} Localization Method for Mobile Robots Based on Multi-Sensing},
 JOURNAL = {Remote Sensing},
 VOLUME = {14},
 YEAR = {2022},
@@ -102,20 +101,19 @@ NUMBER = {23},
 ARTICLE-NUMBER = {6133},
 URL = {https://www.mdpi.com/2072-4292/14/23/6133},
 ISSN = {2072-4292},
-ABSTRACT = {In this paper, we propose a localization method applicable to 3D LiDAR by improving the LiDAR localization algorithm, such as AMCL (Adaptive Monte Carlo Localization). The method utilizes multiple sensing information, including 3D LiDAR, IMU and the odometer, and can be used without GNSS. Firstly, the wheel speed odometer and IMU data of the mobile robot are multi-source fused by EKF (Extended Kalman Filter), and the sensor data obtained after multi-source fusion are used as the motion model to participate in the positional prediction of the particle set in AMCL to obtain the initial positioning information of the mobile robot. Then, the position pose difference values output by AMCL at adjacent moments are substituted into the PL-ICP algorithm as the initial position pose transformation matrix, and the 3D laser point cloud is aligned with the nonlinear system using the PL-ICP algorithm. The three-dimensional laser odometer is obtained by LM (Levenberg--Marquard) iterative solution in the PL-ICP algorithm. Finally, the initial position pose output by AMCL is corrected by the three-dimensional laser odometer, and the AMCL particles are weighted and sampled to output the final positioning result of the mobile robot. Through simulation and practical experiments, it is verified that the improved AMCL algorithm has higher positioning accuracy and stability compared to the AMCL algorithm.},
 DOI = {10.3390/rs14236133}
 }
 
 @book{DARPA,
-author = {Buehler, Martin and Iagnemma, Karl and Singh, Sanjiv},
-title = {The 2005 DARPA Grand Challenge: The Great Robot Race},
-year = {2007},
-isbn = {3540734287},
-publisher = {Springer Publishing Company, Incorporated},
-edition = {1st},
-abstract = {The DARPA Grand Challenge was a landmark in the field of robotics: a race by autonomous vehicles through 132 miles of rough, cross-country Nevada terrain that showcased exciting and unprecedented capabilities in robotic perception, navigation, and control. The event took place in October 2005, and drew teams of competitors from academia and industry, and many garage hobbyists. This book presents fifteen technical papers that are written at a level that makes them easily accessible to a broad technical audience, describing the technology behind most of the robotic vehicles that participated in this famous race. The papers describe each team's driverless vehicle, race strategy, and insights. As a whole, they present the state of the art in autonomous vehicle technology, and offer a glimpse of future technology for tomorrows driverless cars. This book will serve as an authoritative, archival source for the DARPA Grand Challenge and a must have for robotics students and researchers, since it describes the state of the art in perception, planning and control.}
+  editor    = {Buehler, Martin and Iagnemma, Karl and Singh, Sanjiv},
+  title     = {The 2005 DARPA Grand Challenge: The Great Robot Race},
+  year      = {2007},
+  month     = {01},
+  isbn      = {3540734287},
+  doi       = {10.1007/978-3-540-73429-1},
+  publisher = {Springer Publishing Company, Incorporated},
+  address   = {Berlin, Heidelberg},
 }
-
 
 @inproceedings{Geiger2012CVPR,
   author = {Andreas Geiger and Philip Lenz and Raquel Urtasun},
@@ -133,14 +131,14 @@ title = {LOAM : Lidar Odometry and Mapping in real-time},
 journal = {Robotics: Science and Systems Conference (RSS)}
 }
 
-@misc{UWB-OptiTrack,
+
+@article{UWB-OptiTrack,
       title={Fusing Odometry, UWB Ranging, and Spatial Detections for Relative Multi-Robot Localization}, 
       author={Xianjia Yu and Iacopo Catalano and Paola Torrico Morón and Sahar Salimpour and Tomi Westerlund and Jorge Peña Queralta},
       year={2023},
       eprint={2304.06264},
-      archivePrefix={arXiv},
-      primaryClass={cs.RO},
-      url={https://arxiv.org/abs/2304.06264}, 
+      journal={arXiv},
+      doi={https://doi.org/10.48550/arXiv.2304.06264}
 }
 
 @online{optitrack:2025, 
@@ -151,15 +149,16 @@ journal = {Robotics: Science and Systems Conference (RSS)}
 }
 
 @article{Koide_2024,
-   title={{GLIM}: 3{D} range-inertial localization and mapping with {GPU}-accelerated scan matching factors},
-   volume={179},
-   ISSN={0921-8890},
-   DOI={10.1016/j.robot.2024.104750},
-   journal={Robotics and Autonomous Systems},
-   publisher={Elsevier BV},
-   author={Koide, Kenji and Yokozuka, Masashi and Oishi, Shuji and Banno, Atsuhiko},
-   year={2024},
-   month=sep, pages={104750} }
+  title={{GLIM}: 3D range-inertial localization and mapping with GPU-accelerated scan matching factors},
+  author={Koide, Kenji and Yokozuka, Masashi and Oishi, Shuji and Banno, Atsuhiko},
+  journal={Robotics and Autonomous Systems},
+  volume={179},
+  pages={104750},
+  year={2024},
+  publisher={Elsevier},
+  doi={https://doi.org/10.1016/j.robot.2024.104750}
+}
+
 
 @phdthesis{NDT,
 author = {Magnusson, Martin},
@@ -180,16 +179,15 @@ title = {The Three-Dimensional Normal-Distributions Transform --- an Efficient R
   keywords={Solid modeling;Motion estimation;Iterative closest point algorithm;Iterative algorithms;Testing;Inspection;Shape measurement;Iterative methods;Convergence;Quaternions},
   doi={10.1109/34.121791}}
 
-
-@ARTICLE{SLAM,
-  author={Cadena, Cesar and Carlone, Luca and Carrillo, Henry and Latif, Yasir and Scaramuzza, Davide and Neira, José and Reid, Ian and Leonard, John J.},
-  journal={IEEE Transactions on Robotics}, 
-  title={Past, Present, and Future of Simultaneous Localization and Mapping: Toward the Robust-Perception Age}, 
-  year={2016},
+@article{SLAM,
+  title={Past, present, and future of simultaneous localization and mapping: Toward the robust-perception age},
+  author={Cadena, Cesar and Carlone, Luca and Carrillo, Henry and Latif, Yasir and Scaramuzza, Davide and Neira, Jos{\'e} and Reid, Ian and Leonard, John J},
+  journal={IEEE Transactions on robotics},
   volume={32},
   number={6},
-  pages={1309-1332},
-  keywords={Graph theory;Simultaneous location and mapping;Service robots;Robustness;Localization;Factor graphs;localization;mapping;maximum a posteriori estimation;perception;robots;sensing;simultaneous localization and mapping (SLAM)},
+  pages={1309--1332},
+  year={2016},
+  publisher={IEEE},
   doi={10.1109/TRO.2016.2624754}}
 
 
@@ -203,15 +201,16 @@ issn = {2352-7110},
 doi = {https://doi.org/10.1016/j.softx.2023.101618},
 author = {Janusz Będkowski},
 keywords = {A mobile mapping, Lidar odometry, Loop closure, Iterative closest point, Data registration, SLAM},
-abstract = {This paper presents open-source software for large-scale 3D mapping using an open-hardware hand-held measurement device. This work is dedicated to educational and research purposes. This software is composed of three components: LIDAR odometry, single-session refinement and multi-session refinement. Data refinement uses a pose-graph loop closure technique and an Iterative Closest Point algorithm to minimize the error of the edge. The results are 3D point clouds in LAZ data format (compressed LAS - LIDAR Aerial Survey). It was tested in many real-world scenarios/applications: city-level 3D mapping, culture heritage, creating ground truth data for mobile robots, precise forestry, and large-scale indoor 3D mapping. This software can run on Linux and Windows machines, it does not incorporate GPU computing. It is advised to use at least 32 GB of RAM to cope with large data sets. The optimization framework is implemented from scratch using the Eigen library, thus there is not need to install any additional libraries such as Ceres, g2o, GTSAM, manif, Sophus etc.}
 }
 
 @misc{grupp2017evo,
-  title={evo: Python package for the evaluation of odometry and SLAM.},
+  title={{EVO}: Python package for the evaluation of odometry and SLAM.},
   author={Grupp, Michael},
   howpublished={\url{https://github.com/MichaelGrupp/evo}},
-  year={2017}
+  year={2017},
+  note        = {Accessed 2026-07-28}
 }
+
 
 @article{Geiger2013IJRR,
   author = {Andreas Geiger and Philip Lenz and Christoph Stiller and Raquel Urtasun},
@@ -221,21 +220,28 @@ abstract = {This paper presents open-source software for large-scale 3D mapping 
 }
 
 @article{tao2025spires,
-title={The {O}xford {S}pires {D}ataset: Benchmarking Large-Scale LiDAR-Visual Localisation, Reconstruction and Radiance Field Methods},
-author={Tao, Yifu and Mu{\~n}oz-Ba{\~n}{\'o}n, Miguel {\'A}ngel and Zhang, Lintong and Wang, Jiahao and Fu, Lanke Frank Tarimo and Fallon, Maurice},
-journal={International Journal of Robotics Research}, 
-year={2025},
-doi={https://doi.org/10.1177/02783649251369905}
+  title={The {O}xford {S}pires {D}ataset: Benchmarking Large-Scale {LiDAR}-Visual Localisation, Reconstruction and Radiance Field Methods},
+  author={Tao, Yifu and Mu{\~n}oz-Ba{\~n}{\'o}n, Miguel {\'A}ngel and Zhang, Lintong and Wang, Jiahao and Fu, Lanke Frank Tarimo and Fallon, Maurice},
+  journal={The International Journal of Robotics Research},
+  volume={45},
+  number={6},
+  pages={839--857},
+  year={2025},
+  publisher={SAGE Publications Sage UK: London, England},
+  doi={https://doi.org/10.1177/02783649251369905}
 }
 
-@misc{FAST-LIO2,
-      title={FAST-LIO2: Fast Direct LiDAR-inertial Odometry}, 
-      author={Wei Xu and Yixi Cai and Dongjiao He and Jiarong Lin and Fu Zhang},
-      year={2021},
-      eprint={2107.06829},
-      archivePrefix={arXiv},
-      primaryClass={cs.RO},
-      url={https://arxiv.org/abs/2107.06829}, 
+
+@article{FAST-LIO2,
+  title={{FAST-LIO2}: Fast direct lidar-inertial odometry},
+  author={Xu, Wei and Cai, Yixi and He, Dongjiao and Lin, Jiarong and Zhang, Fu},
+  journal={IEEE Transactions on Robotics},
+  volume={38},
+  number={4},
+  pages={2053--2073},
+  year={2022},
+  publisher={IEEE},
+  doi={https://doi.org/10.1109/TRO.2022.3141876}
 }
 
 
@@ -248,29 +254,25 @@ doi={https://doi.org/10.1177/02783649251369905}
 
 @article{cerberusDARPA,
 author = {Marco Tranzatto  and Takahiro Miki  and Mihir Dharmadhikari  and Lukas Bernreiter  and Mihir Kulkarni  and Frank Mascarich  and Olov Andersson  and Shehryar Khattak  and Marco Hutter  and Roland Siegwart  and Kostas Alexis },
-title = {CERBERUS in the DARPA Subterranean Challenge},
+title = {{CERBERUS} in the {DARPA} Subterranean Challenge},
 journal = {Science Robotics},
 volume = {7},
 number = {66},
-pages = {eabp9742},
 year = {2022},
-doi = {10.1126/scirobotics.abp9742},
-URL = {https://www.science.org/doi/abs/10.1126/scirobotics.abp9742},
-eprint = {https://www.science.org/doi/pdf/10.1126/scirobotics.abp9742},
-abstract = {This article presents the core technologies and deployment strategies of Team CERBERUS that enabled our winning run in the DARPA Subterranean Challenge finals. CERBERUS is a robotic system-of-systems involving walking and flying robots presenting resilient autonomy, as well as mapping and navigation capabilities to explore complex underground environments. This article details the winning performance of Team CERBERUS in the DARPA Subterranean Challenge Final Event.}}
+doi = {10.1126/scirobotics.abp9742},}
 
-@article{Campos_2021,
-   title={ORB-SLAM3: An Accurate Open-Source Library for Visual, Visual–Inertial, and Multimap SLAM},
-   volume={37},
-   ISSN={1941-0468},
-   url={http://dx.doi.org/10.1109/TRO.2021.3075644},
-   DOI={10.1109/tro.2021.3075644},
-   number={6},
-   journal={IEEE Transactions on Robotics},
-   publisher={Institute of Electrical and Electronics Engineers (IEEE)},
-   author={Campos, Carlos and Elvira, Richard and Rodriguez, Juan J. Gomez and M. Montiel, Jose M. and D. Tardos, Juan},
-   year={2021},
-   month=dec, pages={1874–1890} }
+
+@article{ORB-SLAM3,
+  title={{ORB-SLAM3}: An Accurate Open-Source Library for Visual, Visual–Inertial, and Multimap SLAM}, 
+  author={Campos, Carlos and Elvira, Richard and Rodríguez, Juan J. Gómez and Montiel, José M. M. and Tardós, Juan Domingo},
+  journal={IEEE Transactions on Robotics}, 
+  year={2021},
+  volume={37},
+  number={6},
+  pages={1874-1890},
+  doi={10.1109/TRO.2021.3075644}
+}
+
 
 
 
@@ -282,41 +284,31 @@ VOLUME = {22},
 YEAR = {2022},
 NUMBER = {11},
 ARTICLE-NUMBER = {4014},
-URL = {https://www.mdpi.com/1424-8220/22/11/4014},
 PubMedID = {35684634},
 ISSN = {1424-8220},
-ABSTRACT = {Infrastructure-free magnetic fields are ubiquitous and have attracted tremendous interest in magnetic field-based indoor positioning. However, magnetic field-based indoor positioning applications face challenges such as low discernibility, heterogeneous devices, and interference from ferromagnetic materials. This paper first analyzes the statistical characteristics of magnetic field (MF) measurements from heterogeneous smartphones. It demonstrates that, in the absence of disturbances, the MF measurements in indoor environments follow a Gaussian distribution with temporal stability and spatial discernibility. It shows the fluctuations in magnetic field intensity caused by the rotation of a smartphone around the Z-axis. Secondly, it suggests that the RLOWESS method can be used to eliminate magnetic field anomalies, using magnetometer calibration to ensure consistent MF measurements in heterogeneous smartphones. Thirdly, it tests the magnetic field positioning performance of homogeneous and heterogeneous devices using different machine learning methods. Finally, it summarizes the feasibility/limitations of using only MF measurement for indoor positioning.},
 DOI = {10.3390/s22114014}
 }
 
-@ARTICLE{ORB-SLAM3,
-  author={Campos, Carlos and Elvira, Richard and Rodríguez, Juan J. Gómez and M. Montiel, José M. and D. Tardós, Juan},
-  journal={IEEE Transactions on Robotics}, 
-  title={ORB-SLAM3: An Accurate Open-Source Library for Visual, Visual–Inertial, and Multimap SLAM}, 
-  year={2021},
-  volume={37},
-  number={6},
-  pages={1874-1890},
-  keywords={Simultaneous localization and mapping;Computer vision;Feature extraction;Inertial navigation;Robustness;Optimization;Computer vision;inertial navigation;simult- aneous localization and mapping},
-  doi={10.1109/TRO.2021.3075644}}
-
-
 @inproceedings{Visual-lidar,
-author = {Zhang, Ji and Singh, Sanjiv},
-year = {2015},
-month = {05},
-pages = {},
-title = {Visual-lidar Odometry and Mapping: Low-drift, Robust, and Fast},
-volume = {2015},
-journal = {Proceedings - IEEE International Conference on Robotics and Automation},
-doi = {10.1109/ICRA.2015.7139486}
+  title={Visual-lidar odometry and mapping: Low-drift, robust, and fast},
+  author={Zhang, Ji and Singh, Sanjiv},
+  booktitle={2015 IEEE international conference on robotics and automation (ICRA)},
+  pages={2174--2181},
+  year={2015},
+  publisher={IEEE},
+  address={Seattle, USA},
+  doi = {10.1109/ICRA.2015.7139486}
 }
 
-@inproceedings{Borenstein1996WhereAI,
-  title={"{W}here am I?" sensors and methods for mobile robot positioning},
-  author={Johann Borenstein and Hobart R. Everett and Liqiang Feng},
-  year={1996},
-  url={https://api.semanticscholar.org/CorpusID:59906505}
+
+@techreport{Borenstein1996WhereAI,
+  author      = {Borenstein, Johann and Everett, H. R. and Feng, Liqiang},
+  title       = {{"Where Am I?""}: Sensors and Methods for Mobile Robot Positioning},
+  institution = {University of Michigan},
+  type        = {Technical Report},
+  year        = {1996},
+  url         = {https://api.semanticscholar.org/CorpusID:59906505},
+  note        = {Accessed 2026-07-28},
 }
 
 @INPROCEEDINGS{Robot-Localization-GNNS,
@@ -327,109 +319,203 @@ doi = {10.1109/ICRA.2015.7139486}
   volume={},
   number={},
   pages={1-6},
-  keywords={Global Positioning System;Robot sensing systems;Kalman filters;Mobile robots;Acceleration;Inertial navigation;component;formatting;style;styling;insert},
+  address={Islamabad, Pakistan},
   doi={10.1109/ICET.2018.8603597}}
 
+
 @inproceedings{grocery-delivery,
-author = {Kronmueller, Maximilian and Fielbaum, Andres and Alonso-Mora, Javier},
-year = {2021},
-month = {11},
-pages = {29-37},
-title = {On-Demand Grocery Delivery From Multiple Local Stores With Autonomous Robots},
-doi = {10.1109/MRS50823.2021.9620599}
-}
-
-@article{Cadena_2016,
-   title={Past, Present, and Future of Simultaneous Localization and Mapping: Toward the Robust-Perception Age},
-   volume={32},
-   ISSN={1941-0468},
-   url={http://dx.doi.org/10.1109/TRO.2016.2624754},
-   DOI={10.1109/tro.2016.2624754},
-   number={6},
-   journal={IEEE Transactions on Robotics},
-   publisher={Institute of Electrical and Electronics Engineers (IEEE)},
-   author={Cadena, Cesar and Carlone, Luca and Carrillo, Henry and Latif, Yasir and Scaramuzza, Davide and Neira, Jose and Reid, Ian and Leonard, John J.},
-   year={2016},
-   month=dec, pages={1309–1332} }
-
-
-@inbook{milford2012featureless,
-author = {Milford, Michael and George, Ashley},
-year = {2014},
-month = {01},
-pages = {569-583},
-title = {Featureless Visual Processing for SLAM in Changing Outdoor Environments},
-volume = {92},
-isbn = {978-3-642-40685-0},
-journal = {Springer Tracts in Advanced Robotics},
-doi = {10.1007/978-3-642-40686-7_38}
-}
-
-@inproceedings{shan2020liosam,
-  title={Lio-sam: Tightly-coupled lidar inertial odometry via smoothing and mapping},
-  author={Shan, Tixiao and Englot, Brendan and Meyers, Drew and Wang, Wei and Ratti, Carlo and Rus, Daniela},
-  booktitle={2020 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)},
-  pages={5135--5142},
-  year={2020}
-}
-
-@inproceedings{nubert2021self,
-  title={Self-supervised Learning of LiDAR Odometry for Robotic Applications},
-  author={Nubert, Julian and Khattak, Shehryar and Hutter, Marco},
-  booktitle={IEEE International Conference on Robotics and Automation (ICRA)},
+  title={On-demand Grocery Delivery from Multiple Local Stores with Autonomous Robots},
+  author={Kronmueller, Maximilian and Fielbaum, Andres and Alonso-Mora, Javier},
+  booktitle={2021 International Symposium on Multi-Robot and Multi-Agent Systems (MRS)},
+  pages={29--37},
   year={2021},
-  organization={IEEE}
+  month = nov,
+  address    = {Cambridge, United Kingdom},
+  publisher  ={IEEE},
+  doi = {10.1109/MRS50823.2021.9620599}
 }
+
+
+
+@Inbook{milford2012featureless,
+  author    = {Milford, Michael and George, Ashley},
+  editor    = {Yoshida, Kazuya and Tadokoro, Satoshi},
+  title     = {Featureless Visual Processing for {SLAM} in Changing Outdoor Environments},
+  booktitle = {Field and Service Robotics},
+  series    = {Springer Tracts in Advanced Robotics},
+  volume    = {92},
+  year      = {2014},
+  publisher = {Springer},
+  address   = {Berlin, Heidelberg},
+  pages     = {569--583},
+  doi       = {10.1007/978-3-642-40686-7_38}
+}
+
+
+@INPROCEEDINGS{shan2020liosam,
+  author={Shan, Tixiao and Englot, Brendan and Meyers, Drew and Wang, Wei and Ratti, Carlo and Rus, Daniela},
+  booktitle={2020 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)}, 
+  title={LIO-SAM: Tightly-coupled Lidar Inertial Odometry via Smoothing and Mapping}, 
+  year={2020},
+  volume={},
+  number={},
+  pages={5135-5142},
+  address={Las Vegas, USA},
+  doi={10.1109/IROS45743.2020.9341176}}
+
+@INPROCEEDINGS{nubert2021self,
+  author={Nubert, Julian and Khattak, Shehryar and Hutter, Marco},
+  booktitle={2021 IEEE International Conference on Robotics and Automation (ICRA)}, 
+  title={Self-supervised Learning of {LiDAR} Odometry for Robotic Applications}, 
+  year={2021},
+  volume={},
+  address={Xi'an, China},
+  number={},
+  pages={9601-9607},
+  doi={10.1109/ICRA48506.2021.9561063}}
+
 
 @article{KISS-ICP,
-   title={KISS-ICP: In Defense of Point-to-Point ICP – Simple, Accurate, and Robust Registration If Done the Right Way},
-   volume={8},
-   ISSN={2377-3774},
-   url={http://dx.doi.org/10.1109/LRA.2023.3236571},
-   DOI={10.1109/lra.2023.3236571},
-   number={2},
-   journal={IEEE Robotics and Automation Letters},
-   publisher={Institute of Electrical and Electronics Engineers (IEEE)},
-   author={Vizzo, Ignacio and Guadagnino, Tiziano and Mersch, Benedikt and Wiesmann, Louis and Behley, Jens and Stachniss, Cyrill},
-   year={2023},
-   month=Feb, pages={1029–1036} }
+  title={{KISS-ICP}: In defense of point-to-point {ICP}--simple, accurate, and robust registration if done the right way},
+  author={Vizzo, Ignacio and Guadagnino, Tiziano and Mersch, Benedikt and Wiesmann, Louis and Behley, Jens and Stachniss, Cyrill},
+  journal={IEEE Robotics and Automation Letters},
+  volume={8},
+  number={2},
+  pages={1029--1036},
+  year={2023},
+  publisher={IEEE},
+  doi={https://doi.org/10.1109/LRA.2023.3236571}
+}
 
 
 @article{RKO-LIO,
-  author      = {M.V.R. Malladi and T. Guadagnino and L. Lobefaro and C. Stachniss},
-  title       = {A Robust Approach for LiDAR-Inertial Odometry Without Sensor-Specific Modeling},
-  journal     = {IEEE Robotics and Automation Letters},
-  year        = {2026},
-  volume      = {11},
-  number      = {6},
-  pages       = {7420--7427},
-  doi         = {10.1109/LRA.2026.3685966},
+  author={Malladi, Meher V. R. and Guadagnino, Tiziano and Lobefaro, Luca and Stachniss, Cyrill},
+  journal={IEEE Robotics and Automation Letters}, 
+  title={Robust Approach for {LiDAR}-Inertial Odometry Without Sensor-Specific Modeling}, 
+  year={2026},
+  volume={11},
+  number={6},
+  pages={7420-7427},
+  doi={10.1109/LRA.2026.3685966}
 }
 
-@article{franccani2025transformer,
-  title={Transformer-based model for monocular visual odometry: a video understanding approach},
-  author={Fran{\c{c}}ani, Andr{\'e} O and Maximo, Marcos ROA},
-  journal={IEEE Access},
-  volume={13},
-  pages={13959--13971},
+
+@ARTICLE{franccani2025transformer,
+  author={Françani, André O. and Maximo, Marcos R. O. A.},
+  journal={IEEE Access}, 
+  title={Transformer-Based Model for Monocular Visual Odometry: A Video Understanding Approach}, 
   year={2025},
-  publisher={IEEE}
+  volume={13},
+  number={},
+  pages={13959-13971},
+  doi={10.1109/ACCESS.2025.3531667}}
+
+@article{bertasius2021space,
+      title={Is Space-Time Attention All You Need for Video Understanding?}, 
+      author={Gedas Bertasius and Heng Wang and Lorenzo Torresani},
+      year={2021},
+      eprint={2102.05095},
+      archivePrefix={arXiv},
+      journal={arXiv},
+      doi={https://doi.org/10.48550/arXiv.2102.05095}
 }
 
-@inproceedings{bertasius2021space,
-  title={Is space-time attention all you need for video understanding?},
-  author={Bertasius, Gedas and Wang, Heng and Torresani, Lorenzo},
-  booktitle={Icml},
-  volume={2},
-  number={3},
-  pages={4},
-  year={2021}
+@INPROCEEDINGS{arnab2021vivit,
+  author={Arnab, Anurag and Dehghani, Mostafa and Heigold, Georg and Sun, Chen and Lučić, Mario and Schmid, Cordelia},
+  booktitle={2021 IEEE/CVF International Conference on Computer Vision (ICCV)}, 
+  title={ViViT: A Video Vision Transformer}, 
+  year={2021},
+  volume={},
+  number={},
+  pages={6816-6826},
+  address={Montreal, Canada},
+  doi={10.1109/ICCV48922.2021.00676}}
+
+@article{bedkowski2026mapshd,
+  title={{MapsHD}: A benchmark suite for LiDAR odometry frameworks},
+  author={B{\k{e}}dkowski, Janusz and Pe{\l}ka, Micha{\l} and Majek, Karol and Matecki, Marcin and others},
+  journal={SoftwareX},
+  volume={35},
+  pages={102822},
+  year={2026},
+  publisher={Elsevier},
+  doi={10.1016/j.softx.2026.102822}
 }
 
-@inproceedings{arnab2021vivit,
-  title={Vivit: A video vision transformer},
-  author={Arnab, Anurag and Dehghani, Mostafa and Heigold, Georg and Sun, Chen and Lu{\v{c}}i{\'c}, Mario and Schmid, Cordelia},
-  booktitle={Proceedings of the IEEE/CVF international conference on computer vision},
-  pages={6836--6846},
-  year={2021}
+@inproceedings{ebadi2020lamp,
+  title={{LAMP}: Large-scale autonomous mapping and positioning for exploration of perceptually-degraded subterranean environments},
+  author={Ebadi, K. and Chang, Y. and Palieri, M. and Stephens, A. and Hatteland, A. and Heiden, E. and Thakur, A. and Funabiki, N. and Morrell, B. and Wood, S. and Carlone, L. and Agha-Mohammadi, A-A.},
+  booktitle={2020 IEEE International Conference on Robotics and Automation (ICRA)},
+  pages={80--86},
+  year={2020},
+  publisher={IEEE},
+  doi={10.1109/ICRA40945.2020.9197082},
+  address = {Paris, France},
 }
+
+@INPROCEEDINGS{qian2021rflio,
+  author={Qian, C. and Xiang, Z. and Wu, Z. and Sun, H.},
+  booktitle={2021 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)}, 
+  title={{RF-LIO}: Removal-First Tightly-coupled {LiDAR} Inertial Odometry in High Dynamic Environments}, 
+  year={2021},
+  month = sep,
+  volume={},
+  number={},
+  pages={4421-4428},
+  doi={10.1109/IROS51168.2021.9636624}
+  }
+
+@article{zhang2021coarse,
+  title={Coarse-to-fine loosely-coupled LiDAR-Inertial odometry for urban positioning and mapping},
+  author={Zhang, J. and Wen, W. and Huang, F. and Chen, X. and Hsu, L-T.},
+  journal={Remote Sensing},
+  volume={13},
+  number={12},
+  pages={2371},
+  year={2021},
+  publisher={MDPI},
+  doi={10.3390/rs13122371}
+}
+
+@inproceedings{zhou2012iodetector,
+  author    = {Zhou, Pengfei and Zheng, Yuanqing and Li, Zhenjiang and Li, Mo and Shen, Guobin},
+  title     = {{IODetector}: A Generic Service for Indoor Outdoor Detection},
+  booktitle = {Proceedings of the 10th ACM Conference on Embedded Network Sensor Systems (SenSys '12)},
+  pages     = {113--126},
+  year      = {2012},
+  publisher = {ACM},
+  doi       = {10.1145/2426656.2426668}
+}
+ 
+@article{mansour2022suns,
+  author  = {Mansour, Ahmed and Chen, Wu},
+  title   = {{SUNS}: A User-Friendly Scheme for Seamless and Ubiquitous Navigation Based on an Enhanced Indoor-Outdoor Environmental Awareness Approach},
+  journal = {Remote Sensing},
+  volume  = {14},
+  number  = {20},
+  pages   = {5263},
+  year    = {2022},
+  doi     = {10.3390/rs14205263}
+}
+
+ 
+@article{zhu2019fastio,
+  author  = {Zhu, Yida and Luo, Haiyong and Wang, Qu and Zhao, Fang and Ning, Bokun and Ke, Qixue and Zhang, Chen},
+  title   = {A Fast Indoor/Outdoor Transition Detection Algorithm Based on Machine Learning},
+  journal = {Sensors},
+  volume  = {19},
+  number  = {4},
+  pages   = {786},
+  year    = {2019}
+}
+ 
+@article{feriol2020review,
+  author  = {Feriol, Florent and Vivet, Damien and Watanabe, Yoko},
+  title   = {A Review of Environmental Context Detection for Navigation Based on Multiple Sensors},
+  journal = {Sensors},
+  volume  = {20},
+  number  = {16},
+  pages   = {4532},
+  year    = {2020}
+}
+ 
