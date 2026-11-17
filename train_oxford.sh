@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-#SBATCH --job-name=TSformer
-#SBATCH --output=log_05.out
+#SBATCH --job-name=TSformer-Oxford
+#SBATCH --output=log_oxford.out
 #SBATCH --time=24:00:00
 #SBATCH --account=ai-air
 #SBATCH --partition=short
@@ -12,4 +12,4 @@
 #
 
 source .venv/bin/activate
-python train.py --config configs/test_church_05.json
+python train.py --config configs/oxford_experiment.json

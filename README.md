@@ -6,7 +6,7 @@ The Oxford experiment documented here fine-tunes the two-frame TSformer-VO model
 
 ## Repository contents
 
-- `train.py` and `configs/test_church.json`: fine-tuning workflow and the final church-excluded experiment configuration.
+- `train.py` and `configs/oxford_experiment.json`: fine-tuning workflow and the final Oxford experiment configuration.
 - `evaluate_tsformer_oxford.py`: inference and APE/RPE evaluation on Oxford sequences or generated subsequences.
 - `copy_subset.py`: creates the doorway subsequences from the tracked timestamp CSV files.
 - `plot_doorway_trajectories.py`: creates combined doorway trajectory figures from evaluation outputs.
@@ -67,7 +67,7 @@ The script processes the ten training sequences and two test sequences listed be
 | `2024-03-18-christ-church-02` | `christ_church_02` | Test |
 | `2024-03-20-christ-church-05` | `christ_church_05` | Test |
 
-This creates the paths expected by `configs/test_church.json`:
+This creates the paths expected by `configs/oxford_experiment.json`:
 
 ```text
 oxford/5hz/<local-name>/
@@ -89,12 +89,12 @@ checkpoints/model1/checkpoint_model1_exp12.pth
 From the repository root, start a fresh run with:
 
 ```bash
-python train.py --config configs/test_church.json
+python train.py --config configs/oxford_experiment.json
 ```
 
 The config fine-tunes from the original checkpoint with Adam (`lr=1e-5`), batch size 8, and up to 100 epochs. It uses two frames per input window (`window_size=2`, `overlap=1`), 192×640 images, and a rotating sequence-level validation split over the ten training sequences. `train.py` sets the PyTorch seed to 2023; exact bit-for-bit results can still depend on the PyTorch/CUDA hardware and runtime.
 
-The fresh-run config has `"checkpoint": null`. To resume an interrupted run, set it to `"checkpoint_last.pth"` and rerun the same command. Checkpoints and TensorBoard logs are written under `checkpoints/test_no_leakage/` and are not tracked by Git. The validation-selected model is `checkpoint_best.pth`.
+The fresh-run config has `"checkpoint": null`. To resume an interrupted run, set it to `"checkpoint_last.pth"` and rerun the same command. Checkpoints and TensorBoard logs are written under `checkpoints/oxford_experiment/` and are not tracked by Git. The validation-selected model is `checkpoint_best.pth`.
 
 ## Reproduce evaluation and export TUM trajectories
 
@@ -111,15 +111,15 @@ To preview the selected frame counts first, add `--dry-run`. The generator does 
 
 ```bash
 python evaluate_tsformer_oxford.py \
-  --checkpoint-path checkpoints/test_no_leakage \
+  --checkpoint-path checkpoints/oxford_experiment \
   --checkpoint-name checkpoint_best \
   --sequence-roots oxford/subsequences/church_02 oxford/subsequences/church_05 \
-  --output-dir comparison/tsformer_eval/test_no_leakage_checkpoint_best
+  --output-dir comparison/tsformer_eval/oxford_experiment_checkpoint_best
 ```
 
 Each subsequence output folder contains `pred_tum.txt` (predicted poses), `gt_overlap.txt` (ground truth in the timestamp overlap), APE/RPE metric archives, and an XY plot. `metrics_summary.csv` records the per-subsequence values and status. The evaluation uses rigid trajectory alignment (`-a`, without scale correction) and a maximum timestamp difference of 0.5 seconds. Check the `status` column; segments without sufficient overlap are skipped and should not be treated as valid measurements.
 
-The TUM files needed by downstream analysis are under `comparison/tsformer_eval/test_no_leakage_checkpoint_best/<sequence>/<subsequence>/`. Share the relevant `pred_tum.txt` files and matching `gt_overlap.txt` files with the researcher running the comparison scripts. These generated files remain local because `comparison/` is Git-ignored.
+The TUM files needed by downstream analysis are under `comparison/tsformer_eval/oxford_experiment_checkpoint_best/<sequence>/<subsequence>/`. Share the relevant `pred_tum.txt` files and matching `gt_overlap.txt` files with the researcher running the comparison scripts. These generated files remain local because `comparison/` is Git-ignored.
 
 To regenerate the combined doorway plots after evaluation:
 

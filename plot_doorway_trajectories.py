@@ -21,11 +21,11 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # Map output figure suffix to TSformer bag folder and full-sequence GT file.
 SEQUENCE_CONFIG = {
     'christ-church-02': {
-        'result_dir': os.path.join(BASE_DIR, 'comparison', 'tsformer_eval', 'test_no_leakage_checkpoint_best', 'church_02'),
+        'result_dir': os.path.join(BASE_DIR, 'comparison', 'tsformer_eval', 'oxford_experiment_checkpoint_best', 'church_02'),
         'full_gt_file': os.path.join(BASE_DIR, 'oxford', '5hz', 'christ_church_02', 'gt-tum.txt'),
     },
     'christ-church-05': {
-        'result_dir': os.path.join(BASE_DIR, 'comparison', 'tsformer_eval', 'test_no_leakage_checkpoint_best', 'church_05'),
+        'result_dir': os.path.join(BASE_DIR, 'comparison', 'tsformer_eval', 'oxford_experiment_checkpoint_best', 'church_05'),
         'full_gt_file': os.path.join(BASE_DIR, 'oxford', '5hz', 'christ_church_05', 'gt-tum.txt'),
     },
 }

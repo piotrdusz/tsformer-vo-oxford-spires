@@ -250,8 +250,8 @@ def compute_loss(y_hat, y, criterion, args):
 if __name__ == "__main__":
     # Parse command-line arguments
     parser = argparse.ArgumentParser(description="Train TSformer model")
-    parser.add_argument("--config", type=str, default="configs/config_oxford.json",
-                        help="Path to config file (default: configs/config_oxford.json)")
+    parser.add_argument("--config", type=str, default="configs/oxford_experiment.json",
+                        help="Path to config file (default: configs/oxford_experiment.json)")
     cmd_args = parser.parse_args()
 
     # Load config from file
