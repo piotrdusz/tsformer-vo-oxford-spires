@@ -27,8 +27,7 @@ data/
 data
 .idea
 .gitattributes
-checkpoints
-checkpoints/
+/checkpoints/
 oxford/
 .vscode/
-comparison/
+/comparison/

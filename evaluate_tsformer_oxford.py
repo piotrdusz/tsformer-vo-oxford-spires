@@ -370,16 +370,23 @@ def run_inference_for_subsequence(model, args, preprocess, seq_dir, gt_file, dev
 
 def main():
     parser = argparse.ArgumentParser(description="Evaluate TS-Former on Oxford subsequences with APE/RPE CSV output.")
-    parser.add_argument("--checkpoint-path", default="checkpoints/m1_ch2_ch5")
+    parser.add_argument("--checkpoint-path", default="checkpoints/test_no_leakage")
     parser.add_argument("--checkpoint-name", default="checkpoint_best")
-    parser.add_argument("--sequence-roots", nargs="+", default=["oxford/02", "oxford/05"])
+    parser.add_argument(
+        "--sequence-roots",
+        nargs="+",
+        default=["oxford/subsequences/church_02", "oxford/subsequences/church_05"],
+    )
     parser.add_argument(
         "--include-names",
         nargs="+",
         default=None,
         help="Optional list of sequence/subsequence folder names to evaluate.",
     )
-    parser.add_argument("--output-dir", default="comparison/tsformer_eval")
+    parser.add_argument(
+        "--output-dir",
+        default="comparison/tsformer_eval/test_no_leakage_checkpoint_best",
+    )
     parser.add_argument("--t-max-diff", type=float, default=0.5)
     args_cli = parser.parse_args()
 
