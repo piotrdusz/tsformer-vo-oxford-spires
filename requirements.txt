@@ -32,6 +32,7 @@ PyYAML==6.0
 requests==2.27.1
 requests-oauthlib==1.3.1
 rsa==4.9
+scipy==1.7.3
 simplejson==3.18.0
 six==1.16.0
 tabulate==0.8.10
@@ -44,6 +45,7 @@ torchvision==0.11.2
 tqdm==4.64.1
 typing_extensions==4.1.1
 urllib3==1.26.13
+evo==1.21.0
 Werkzeug==2.0.3
 yacs==0.1.8
 zipp==3.6.0

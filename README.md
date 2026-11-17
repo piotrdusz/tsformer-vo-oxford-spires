@@ -1,8 +1,10 @@
-# TSformer-VO: Oxford RobotCar experiments
+# TSformer-VO: Oxford Spires experiments
 
-This repository contains the TSformer-VO implementation and the Oxford RobotCar training and evaluation workflow used for the monocular visual-odometry experiments. The model implementation is adapted from [TimeSformer](https://github.com/facebookresearch/TimeSformer) and the original [TSformer-VO project](https://github.com/aofrancani/TSformer-VO).
+This repository contains the TSformer-VO implementation and the Oxford Spires training and evaluation workflow used for the monocular visual-odometry experiments. The model implementation is adapted from [TimeSformer](https://github.com/facebookresearch/TimeSformer) and the original [TSformer-VO project](https://github.com/aofrancani/TSformer-VO). It is designed to work as a standalone repository or as a submodule.
 
-The Oxford experiment documented here fine-tunes the two-frame TSformer-VO model on ten Oxford sequences, with all Christ Church recordings excluded from training. The trained model is evaluated on the Christ Church 02 and 05 doorway subsequences.
+Run commands from this repository's root directory (the `TSformer-VO/` directory when included as a submodule). Configuration, data, and command output paths are relative to that working directory; the Slurm launcher changes to its own repository directory before running. Slurm resolves the launcher's `log_oxford.out` path relative to the directory from which the job is submitted.
+
+The Oxford experiment documented here fine-tunes the two-frame TSformer-VO model on ten Oxford Spires sequences. Its two test sequences, Christ Church 02 and 05, are from the same site and are held out from the Oxford fine-tuning pool. The tracked timestamp CSVs define the evaluated doorway subsequences.
 
 ## Repository contents
 
@@ -13,20 +15,17 @@ The Oxford experiment documented here fine-tunes the two-frame TSformer-VO model
 - `datasets/` and `timesformer/`: dataset loaders and model implementation.
 - `checkpoints/`, `comparison/`, and `oxford/`: local experiment outputs and data; these are intentionally excluded from Git.
 
-The older KITTI scripts and experiment configurations remain in the repository, but are not part of the Oxford workflow below.
-
 ## Environment
 
-The original model checkpoints and pinned dependencies target Python 3.8 and PyTorch 1.10.1. A CUDA-capable GPU is recommended for training; evaluation can run on CPU.
+The original model checkpoints and pinned dependencies target Python 3.8 and PyTorch 1.10.1. A CUDA-capable GPU is recommended for training; evaluation can run on CPU. The batch script `train_oxford.sh` uses the repository-local `.venv`, so create and activate that environment from the repository root as follows:
 
 ```bash
-conda create -n tsformer-vo python=3.8
-conda activate tsformer-vo
+python3.8 -m venv .venv
+source .venv/bin/activate
 python -m pip install -r requirements.txt
-python -m pip install scipy evo
 ```
 
-`scipy` is needed for pose conversion and `evo` provides the `evo_ape`, `evo_rpe`, and `evo_traj` commands used by evaluation. Install a PyTorch build compatible with the machine's CUDA setup if the default `requirements.txt` install is not suitable.
+`scipy` is used for pose conversion and `evo` provides the `evo_ape`, `evo_rpe`, and `evo_traj` commands used by evaluation; both are included in `requirements.txt`. Install a PyTorch build compatible with the machine's CUDA setup if the default `requirements.txt` install is not suitable. After activating `.venv`, run `bash train_oxford.sh` locally or submit it with `sbatch train_oxford.sh` on Slurm. The launcher resolves the repository directory from its own location, so it can also be submitted while the current directory is elsewhere.
 
 ## Download and prepare the data
 
@@ -50,7 +49,7 @@ python prepare_oxford_5hz.py \
   --output-root oxford/5hz
 ```
 
-The script processes the ten training sequences and two test sequences listed below. It reads image timestamps to detect the recording rate, selects every fourth frame from approximately 20 Hz recordings, and keeps every frame from approximately 5 Hz recordings. It copies the corresponding `gt-tum.txt` unchanged. The `--dry-run` option reports detected rates and frame counts without writing files. Outputs are not overwritten; use a fresh output directory if preparing the data again.
+The script processes the ten training sequences and two test sequences listed below. For each sequence it estimates the source rate as the inverse median interval between sorted image timestamps, then chooses the integer stride nearest to a 5 Hz target (`round(source_rate / 5)`, with a minimum stride of one). It selects frames at indices `stride - 1, 2 * stride - 1, ...` and requires the resulting estimated rate to be within 15% of 5 Hz. Thus a roughly 20 Hz sequence uses stride 4, while a roughly 5 Hz sequence uses stride 1. `gt-tum.txt` is copied unchanged. The `--dry-run` option reports detected rates, strides, and frame counts without writing files. Outputs are not overwritten; use a fresh output directory if preparing the data again.
 
 | Official Oxford Spires sequence | Local name | Use |
 | --- | --- | --- |
@@ -75,14 +74,16 @@ oxford/5hz/<local-name>/
     gt-tum.txt
 ```
 
-The two Christ Church recordings are excluded from training.
+The ten sequences marked Train form the Oxford fine-tuning pool. Both Christ Church sequences are excluded from that pool and are held out at the site level for testing.
 
-Download the original two-frame TSformer-VO checkpoint and its `args.pkl` from the [upstream checkpoint links](https://github.com/aofrancani/TSformer-VO#2-pre-trained-models). Place them at:
+Download the original two-frame TSformer-VO checkpoint and its `args.pkl` from the [upstream checkpoint links](https://github.com/aofrancani/TSformer-VO#2-pre-trained-models). The upstream project documents its trained TSformer-VO checkpoints in the context of KITTI; this KITTI-trained two-frame checkpoint initializes the separate Oxford fine-tuning stage described below. Place the files at:
 
 ```text
 checkpoints/model1/args.pkl
 checkpoints/model1/checkpoint_model1_exp12.pth
 ```
+
+The checkpoint weights are not included in this repository, and this repository records no trusted upstream checksum or checkpoint DOI. Evaluation records SHA-256 fingerprints for the selected checkpoint and arguments, and (when their files are available) the initialization checkpoint and its arguments, in `run_metadata.json`. These fingerprints identify local file contents only; they do not establish provenance or authenticate the weights against an upstream release.
 
 ## Reproduce training
 
@@ -92,7 +93,7 @@ From the repository root, start a fresh run with:
 python train.py --config configs/oxford_experiment.json
 ```
 
-The config fine-tunes from the original checkpoint with Adam (`lr=1e-5`), batch size 8, and up to 100 epochs. It uses two frames per input window (`window_size=2`, `overlap=1`), 192×640 images, and a rotating sequence-level validation split over the ten training sequences. `train.py` sets the PyTorch seed to 2023; exact bit-for-bit results can still depend on the PyTorch/CUDA hardware and runtime.
+The config fine-tunes from the original checkpoint with Adam (`lr=1e-5`), batch size 8, and up to 100 epochs. It uses two frames per input window (`window_size=2`, `overlap=1`), 192×640 images, and a rotating sequence-level validation split over the ten training sequences. Each epoch holds out one whole training sequence for validation and trains on the other nine; the held-out sequence rotates by epoch. In this mode, the configured `val_split` fraction is not used. `checkpoint_best.pth` is selected by the lowest validation loss observed across those rotating folds. The two Christ Church test sequences are evaluated once after training and do not select the checkpoint. `train.py` sets the PyTorch seed to 2023; it does not force deterministic kernels, so exact bit-for-bit results can still depend on the PyTorch/CUDA hardware and runtime.
 
 The fresh-run config has `"checkpoint": null`. To resume an interrupted run, set it to `"checkpoint_last.pth"` and rerun the same command. Checkpoints and TensorBoard logs are written under `checkpoints/oxford_experiment/` and are not tracked by Git. The validation-selected model is `checkpoint_best.pth`.
 
@@ -117,9 +118,11 @@ python evaluate_tsformer_oxford.py \
   --output-dir comparison/tsformer_eval/oxford_experiment_checkpoint_best
 ```
 
-Each subsequence output folder contains `pred_tum.txt` (predicted poses), `gt_overlap.txt` (ground truth in the timestamp overlap), APE/RPE metric archives, and an XY plot. `metrics_summary.csv` records the per-subsequence values and status. The evaluation uses rigid trajectory alignment (`-a`, without scale correction) and a maximum timestamp difference of 0.5 seconds. Check the `status` column; segments without sufficient overlap are skipped and should not be treated as valid measurements.
+Each subsequence output folder contains `pred_tum.txt` (predicted poses), `gt_overlap.txt` (ground truth in the timestamp overlap), APE/RPE metric archives, and an XY plot. `metrics_summary.csv` records per-subsequence APE/RPE maximum and RMSE values, image/pose/GT coverage counts, nearest image-to-GT timestamp-difference summaries, and status/notes for failed or skipped evaluation steps. The loader matches each image to its nearest ground-truth timestamp without a maximum-difference cutoff; the reported timestamp differences make that matching visible without dropping samples. EVO then uses rigid trajectory alignment (`-a`, without scale correction) and the configured maximum timestamp difference (0.5 seconds by default).
 
-The TUM files needed by downstream analysis are under `comparison/tsformer_eval/oxford_experiment_checkpoint_best/<sequence>/<subsequence>/`. Share the relevant `pred_tum.txt` files and matching `gt_overlap.txt` files with the researcher running the comparison scripts. These generated files remain local because `comparison/` is Git-ignored.
+Status meanings: `ok` means both metrics and the plot completed; `partial` means at least one metric completed but a metric or plot step failed; `fail` means both metric commands failed; `skip` means the input or overlap was insufficient to run evaluation. A non-`ok` row is not a complete valid measurement. Use `num_images`, `num_pred_poses`, and `num_gt_overlap` to inspect coverage, and review `notes` and timestamp-difference columns before comparing results.
+
+The output also includes `tum_outputs_manifest.csv`, which maps each exact `bag_name` from the input timestamp CSV (the subsequence folder name) to its sequence group, status, and relative paths for the predicted and matching ground-truth TUM files. Share the listed files with downstream analysis, honoring the status. `run_metadata.json` records the resolved evaluation parameters, model parameters, runtime/package versions, device, and local-file fingerprints for the evaluated and available initialization artifacts. These generated files remain local because `comparison/` is Git-ignored.
 
 To regenerate the combined doorway plots after evaluation:
 

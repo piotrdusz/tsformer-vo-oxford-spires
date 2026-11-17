@@ -20,7 +20,7 @@ def quaternion_to_rotation_matrix(qx, qy, qz, qw):
 
 class Oxford(torch.utils.data.Dataset):
     """
-    Dataloader for Oxford RobotCar dataset.
+    Dataloader for Oxford Spires sequences.
 
     Ground truth file format (one line per pose):
         timestamp x y z qx qy qz qw

@@ -3,9 +3,12 @@
 import argparse
 import csv
 import glob
+import hashlib
+import importlib.metadata
 import json
 import os
 import pickle
+import platform
 import queue
 import subprocess
 import zipfile
@@ -143,6 +146,41 @@ def nearest_gt_timestamps_for_images(image_ts, gt_rows):
         idx = int(np.argmin(np.abs(gt_ts - ts)))
         matched.append(float(gt_ts[idx]))
     return matched
+
+
+def image_gt_timestamp_differences(image_ts, gt_rows):
+    if not image_ts or not gt_rows:
+        return []
+    gt_ts = np.array([r[0] for r in gt_rows], dtype=np.float64)
+    image_ts = np.asarray(image_ts, dtype=np.float64)
+    nearest = np.min(np.abs(image_ts[:, None] - gt_ts[None, :]), axis=1)
+    return nearest.tolist()
+
+
+def sha256_file(path):
+    digest = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def artifact_info(path):
+    if not path:
+        return {"path": None, "sha256": None}
+    return {
+        "path": os.path.abspath(path),
+        "sha256": sha256_file(path) if os.path.isfile(path) else None,
+    }
+
+
+def package_versions():
+    versions = {}
+    for distribution in importlib.metadata.distributions():
+        name = distribution.metadata.get("Name")
+        if name:
+            versions[name] = distribution.version
+    return dict(sorted(versions.items(), key=lambda item: item[0].lower()))
 
 
 def poses12_to_tum_with_timestamps(poses12_file, timestamps, output_tum_file):
@@ -339,7 +377,11 @@ def build_model_and_args(checkpoint_path, checkpoint_name, device):
         ]
     )
 
-    return model, args, preprocess
+    checkpoint_info = {
+        "epoch": checkpoint.get("epoch"),
+        "best_val": checkpoint.get("best_val"),
+    }
+    return model, args, preprocess, checkpoint_info
 
 
 def run_inference_for_subsequence(model, args, preprocess, seq_dir, gt_file, device):
@@ -394,7 +436,7 @@ def main():
     print(f"Using device: {device}")
     print(f"Checkpoint: {args_cli.checkpoint_path}/{args_cli.checkpoint_name}.pth")
 
-    model, model_args, preprocess = build_model_and_args(
+    model, model_args, preprocess, checkpoint_info = build_model_and_args(
         args_cli.checkpoint_path, args_cli.checkpoint_name, device
     )
 
@@ -407,6 +449,7 @@ def main():
     csv_path = os.path.join(args_cli.output_dir, "metrics_summary.csv")
 
     rows = []
+    manifest_rows = []
     for root, sub_name, sub_dir, seq_dir, gt_file in subsequences:
         seq_id = os.path.basename(root.rstrip("/"))
         run_name = f"{seq_id}_{sub_name}"
@@ -418,6 +461,7 @@ def main():
         image_files, image_ts = extract_image_timestamps(seq_dir)
         gt_rows = read_tum_file(gt_file)
         matched_gt_ts = nearest_gt_timestamps_for_images(image_ts, gt_rows)
+        timestamp_differences = image_gt_timestamp_differences(image_ts, gt_rows)
 
         status = "ok"
         notes = ""
@@ -428,6 +472,8 @@ def main():
         pred_count = 0
         gt_overlap_count = 0
         plot_file = ""
+        pred_tum_generated = False
+        gt_overlap_generated = False
 
         if len(image_files) < 2:
             status = "skip"
@@ -446,6 +492,7 @@ def main():
 
             gt_overlap_file = os.path.join(out_dir, "gt_overlap.txt")
             gt_overlap_count = write_gt_overlap(gt_rows, image_ts, gt_overlap_file)
+            gt_overlap_generated = True
 
             pred_tum_file = os.path.join(out_dir, "pred_tum.txt")
             pred_count = poses12_to_tum_with_timestamps(
@@ -453,6 +500,7 @@ def main():
                 matched_gt_ts[1:] if len(matched_gt_ts) > 1 else matched_gt_ts,
                 pred_tum_file,
             )
+            pred_tum_generated = True
 
             ape_zip = os.path.join(out_dir, "ape_metrics.zip")
             rpe_zip = os.path.join(out_dir, "rpe_metrics.zip")
@@ -524,12 +572,33 @@ def main():
                 "num_images": len(image_files),
                 "num_pred_poses": pred_count,
                 "num_gt_overlap": gt_overlap_count,
+                "max_image_gt_timestamp_diff_s": max(timestamp_differences, default=None),
+                "mean_image_gt_timestamp_diff_s": (
+                    float(np.mean(timestamp_differences)) if timestamp_differences else None
+                ),
                 "ape_max_m": ape_max,
                 "ape_rmse_m": ape_rmse,
                 "rpe_max_m": rpe_max,
                 "rpe_rmse_m": rpe_rmse,
                 "status": status,
                 "notes": notes,
+            }
+        )
+        manifest_rows.append(
+            {
+                "sequence_group": seq_id,
+                "bag_name": sub_name,
+                "status": status,
+                "pred_tum": (
+                    os.path.relpath(os.path.join(out_dir, "pred_tum.txt"), args_cli.output_dir)
+                    if pred_tum_generated
+                    else ""
+                ),
+                "gt_overlap": (
+                    os.path.relpath(os.path.join(out_dir, "gt_overlap.txt"), args_cli.output_dir)
+                    if gt_overlap_generated
+                    else ""
+                ),
             }
         )
 
@@ -543,6 +612,8 @@ def main():
                 "num_images",
                 "num_pred_poses",
                 "num_gt_overlap",
+                "max_image_gt_timestamp_diff_s",
+                "mean_image_gt_timestamp_diff_s",
                 "ape_max_m",
                 "ape_rmse_m",
                 "rpe_max_m",
@@ -554,7 +625,91 @@ def main():
         writer.writeheader()
         writer.writerows(rows)
 
+    manifest_path = os.path.join(args_cli.output_dir, "tum_outputs_manifest.csv")
+    with open(manifest_path, "w", newline="") as f:
+        writer = csv.DictWriter(
+            f,
+            fieldnames=["sequence_group", "bag_name", "status", "pred_tum", "gt_overlap"],
+        )
+        writer.writeheader()
+        writer.writerows(manifest_rows)
+
+    args_path = os.path.join(args_cli.checkpoint_path, "args.pkl")
+    checkpoint_file = os.path.join(
+        args_cli.checkpoint_path, f"{args_cli.checkpoint_name}.pth"
+    )
+    source_checkpoint_file = model_args.get("finetune_from")
+    source_args_file = (
+        os.path.join(os.path.dirname(source_checkpoint_file), "args.pkl")
+        if source_checkpoint_file
+        else None
+    )
+    metadata = {
+        "checkpoint": {
+            "evaluated": artifact_info(checkpoint_file),
+            "evaluated_args": artifact_info(args_path),
+            "initialization": artifact_info(source_checkpoint_file),
+            "initialization_args": artifact_info(source_args_file),
+            "loaded_state_dict": True,
+            **checkpoint_info,
+        },
+        "evaluation": {
+            "command_line": {
+                "checkpoint_path": args_cli.checkpoint_path,
+                "checkpoint_name": args_cli.checkpoint_name,
+                "sequence_roots": args_cli.sequence_roots,
+                "include_names": args_cli.include_names,
+                "output_dir": args_cli.output_dir,
+                "t_max_diff": args_cli.t_max_diff,
+            },
+            "device": device,
+            "window_size": model_args["window_size"],
+            "overlap": model_args["overlap"],
+            "model_params": model_args["model_params"],
+            "image_preprocessing": {
+                "resize": model_args["model_params"]["image_size"],
+                "normalization_mean": [0.34721234, 0.36705238, 0.36066107],
+                "normalization_std": [0.30737526, 0.31515116, 0.32020183],
+            },
+            "ground_truth_matching": "nearest timestamp; no maximum difference cutoff",
+            "trajectory_alignment": "rigid, without scale correction",
+            "timestamp_max_difference_s": args_cli.t_max_diff,
+            "metric_options": {
+                "evo_ape": ["tum", "-a", "--t_max_diff", args_cli.t_max_diff, "--save_results"],
+                "evo_rpe": ["tum", "-a", "--t_max_diff", args_cli.t_max_diff, "--save_results"],
+                "evo_traj": [
+                    "tum",
+                    "--ref",
+                    "-a",
+                    "--plot_mode=xy",
+                    "--t_max_diff",
+                    args_cli.t_max_diff,
+                ],
+            },
+        },
+        "subsequences": [
+            {
+                "sequence_root": row["sequence_root"],
+                "bag_name": row["subsequence"],
+                "status": row["status"],
+                "num_images": row["num_images"],
+                "num_pred_poses": row["num_pred_poses"],
+                "num_gt_overlap": row["num_gt_overlap"],
+            }
+            for row in rows
+        ],
+        "runtime": {
+            "python": platform.python_version(),
+            "platform": platform.platform(),
+            "packages": package_versions(),
+        },
+    }
+    with open(os.path.join(args_cli.output_dir, "run_metadata.json"), "w") as f:
+        json.dump(metadata, f, indent=2, sort_keys=True)
+
     print(f"\nSaved CSV summary: {csv_path}")
+    print(f"Saved TUM outputs manifest: {manifest_path}")
+    print(f"Saved run metadata: {os.path.join(args_cli.output_dir, 'run_metadata.json')}")
 
 
 if __name__ == "__main__":
