@@ -1,4 +1,5 @@
 # TSformer-VO: Oxford Spires experiments
+[![DOI](https://zenodo.org/badge/1289987882.svg)](https://doi.org/10.5281/zenodo.24404818)
 
 This repository contains the TSformer-VO implementation and the Oxford Spires training and evaluation workflow used for the monocular visual-odometry experiments. The model implementation is adapted from [TimeSformer](https://github.com/facebookresearch/TimeSformer) and the original [TSformer-VO project](https://github.com/aofrancani/TSformer-VO). It is designed to work as a standalone repository or as a submodule.
 
